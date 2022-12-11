@@ -1,0 +1,22 @@
+for k in $@
+do
+    if [ -f $k ]
+    then
+        echo "ok"
+    else
+        arg=${k:1}
+        if [ "${arg:0:1}" == "-" ]
+        then
+            arg=${arg:1}
+        fi
+        test=`grep $arg $allowed_arg`
+        echo "test=$test,"
+        if [ -n "$test"] #&& [ "$test" = "0" ]
+        then
+            echo "ok"
+        else
+            echo "pas ok"
+            exit 3
+        fi
+    fi
+done
