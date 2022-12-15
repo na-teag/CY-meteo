@@ -363,7 +363,7 @@ if [ $erreur_arg -eq 1 ] && [ $arg_help -eq 0 ]
 then
     #echo "pas ok"
     echo -e "\033[31m$erreur_txt"
-    echo -e "\033[30m \nPour afficher l'aide, utilisez l'option --help, ou consultez le readme : \033[34mhttps://github.com/na-teag/"
+    echo -e "\x1B[0m\nPour afficher l'aide, utilisez l'option --help, ou consultez le readme : \033[34mhttps://github.com/na-teag/CY-meteo/blob/main/README.md \x1B[0m"
     exit 1
 elif [ $arg_help -eq 1 ]
 then

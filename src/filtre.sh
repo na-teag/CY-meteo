@@ -13,4 +13,4 @@ echo "ok"
 
  
  #head -n100 meteo_filtered_data_v1.csv | tail -n +2  | sed -e 's/,/;/g' | cut -d\; -f1,11 | sort -k1 -t\; -n > temp.csv
- #gnuplot temp.csv 
+ gnuplot plot "plot 'temp.csv'"
