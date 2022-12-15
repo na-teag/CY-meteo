@@ -973,11 +973,12 @@ then
 fi
 
 
-# la date est elle au bon format ?
+# la date est elle au bon format ? -> juste verifier que les cartacteres sont des chiffres
 
 # latitudes et longitudes sont elle ok ?
 
-# fichier est il un tableur compatible ?
+# fichier est il un tableur compatible ? -> verifier que chiffre et que est dans l'intervalle des latitudes/longitude existant
+
 
 
 
@@ -988,7 +989,7 @@ if [ $erreur_arg -eq 1 ] && [ $arg_help -eq 0 ]
 then
     #echo "pas ok"
     echo -e "\033[31m$erreur_txt"
-    echo -e "\033[30m \nPour afficher l'aide, utilisez l'option --help, ou consultez le readme : \033[34mhttps://github.com/na-teag/"
+    echo -e "\x1B[0m \nPour afficher l'aide, utilisez l'option --help, ou consultez le readme : \033[34mhttps://github.com/na-teag/CY-meteo/blob/main/README.md \x1B[0m"
     exit 1
 elif [ $arg_help -eq 1 ]
 then
@@ -998,3 +999,5 @@ else
 fi
 
 # 25*25=625 lignes de ctrl+v !
+
+
