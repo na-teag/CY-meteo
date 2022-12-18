@@ -12,18 +12,19 @@ arg_latitude1=""
 arg_latitude2=""
 arg_longitude1=""
 arg_longitude2=""
-arg_t=0
-arg_p=0
-arg_w=0
-arg_h=0
-arg_m=0
-arg_d=0
-arg_f=0
-arg_g=0
-arg_a=0
-arg_lieu=0
-arg_tris=0
+arg_t="0"
+arg_p="0"
+arg_w="0"
+arg_h="0"
+arg_m="0"
+arg_d="0"
+arg_f="0"
+arg_g="0"
+arg_a="0"
+arg_lieu="0"
+arg_tris="0"
 arg_help=0
+num0_9='^[0-9]'
 
 
 test_erreur () { #next_arg erreur_txt
@@ -53,6 +54,17 @@ test_erreur () { #next_arg erreur_txt
             erreur_txt="$erreur_txt\nerreur : un argument de type $next_arg est attendu après l'option -g"
         fi
     fi
+}
+
+nest_pas () {
+    for (( i=$2 ; i<=$3 ; i++ ))
+    do
+        if [ "$i" = "$1" ]
+        then
+            return 1
+        fi
+    done
+    return 0
 }
 
 
@@ -128,9 +140,9 @@ do
         fi;;
     -d)
         test_erreur $next_arg $erreur_txt
-        if [ $arg_d -eq 0 ]
+        if [ "$arg_d" = "0" ]
         then
-            arg_d=1
+            arg_d="$k"
             next_arg=date_de_début_de_relevé
         else
             erreur_arg=1
@@ -169,23 +181,23 @@ do
     -w)
         test_erreur $next_arg $erreur_txt
         next_arg=0
-        arg_w=1;;
+        arg_w="$k";;
     -h)
         test_erreur $next_arg $erreur_txt
         next_arg=0
-        arg_h=1;;
+        arg_h="$k";;
     -m)
         test_erreur $next_arg $erreur_txt
         next_arg=0
-        arg_m=1;;
+        arg_m="$k";;
     -f)
         test_erreur $next_arg $erreur_txt
-        if [ $arg_f -eq 0 ]
+        if [ "$arg_f" = "0" ]
         then
-            arg_f=1
+            arg_f="$k"
             next_arg=fichier
         else
-            erreur_arg=1
+            erreur_arg="$k"
             erreur_txt="$erreur_txt\nerreur : l'option -f a déjà été utilisée, impossible d'utiliser plusieurs fichiers"
         fi;;
     -F)
@@ -333,6 +345,9 @@ done
 
 ###################### vérification de fin deboucle ########################################
 
+
+#### erreur fichier
+
 test_erreur $next_arg $erreur_txt
 
 if [ "$arg_f" = "0" ]
@@ -341,18 +356,118 @@ then
     erreur_arg=1
 fi
 
-if [ "$arg_t" = "0" ] && [ "$arg_p" = "0" ] && [ $arg_m -eq 0 ] && [ $arg_h -eq 0 ] && [ $arg_w -eq 0 ]
+
+#### erreur argument manquant
+
+if [ "$arg_t" = "0" ] && [ "$arg_p" = "0" ] && [ "$arg_m" = "0" ] && [ "$arg_h" = "0" ] && [ "$arg_w" = "0" ]
 then
     erreur_txt="$erreur_txt\nerreur : aucun type de donné à analyser spécifié, vous devez utiliser au moins une des options suivantes : -t -p -m -h -w"
     erreur_arg=1
 fi
 
 
-# la date est elle au bon format ?
+#### erreur format de date
 
-# latitudes et longitudes sont elle ok ?
+if [ "$arg_d" != "0" ]
+then
+    if  [ ${#arg_date1} -ne 10 ]
+    then
+        erreur_txt="$erreur_txt\nerreur : la date de début n'a pas le bon format"
+        erreur_arg=1
+    elif nest_pas ${arg_date1:0:1} 0 2  || nest_pas ${arg_date1:1:1} 0 9 || nest_pas ${arg_date1:2:1} 0 9 || nest_pas ${arg_date1:3:1} 0 9 || [ "${arg_date1:4:1}" != "-" ] || nest_pas ${arg_date1:5:1} 0 1 || nest_pas ${arg_date1:6:1} 0 9 || [ "${arg_date1:7:1}" != "-" ] || nest_pas ${arg_date1:8:1} 0 3 || nest_pas ${arg_date1:9:1} 0 9
+    then
+        erreur_txt="$erreur_txt\nerreur : la date de début n'a pas le bon format"
+        erreur_arg=1
+    elif [ "${arg_date1:8:1}" = "3" ] && ! nest_pas ${arg_date1:9:1} 2 9
+    then
+        erreur_txt="$erreur_txt\nerreur : la date de début n'a pas le bon format"
+        erreur_arg=1
+    elif [ "${arg_date1:5:1}" = "1" ] && ! nest_pas ${arg_date1:6:1} 3 9
+    then
+        erreur_txt="$erreur_txt\nerreur : la date de début n'a pas le bon format"
+        erreur_arg=1
+    fi
 
-# fcommentaire et nom de variable en anglais = plus de points ?
+    if  [ ${#arg_date2} -ne 10 ]
+    then
+        erreur_txt="$erreur_txt\nerreur : la date de fin n'a pas le bon format"
+        erreur_arg=1
+    elif nest_pas ${arg_date2:0:1} 0 2  || nest_pas ${arg_date2:1:1} 0 9 || nest_pas ${arg_date2:2:1} 0 9 || nest_pas ${arg_date2:3:1} 0 9 || [ "${arg_date2:4:1}" != "-" ] || nest_pas ${arg_date2:5:1} 0 1 || nest_pas ${arg_date2:6:1} 0 9 || [ "${arg_date2:7:1}" != "-" ] || nest_pas ${arg_date2:8:1} 0 3 || nest_pas ${arg_date2:9:1} 0 9
+    then
+        erreur_txt="$erreur_txt\nerreur : la date de fin n'a pas le bon format"
+        erreur_arg=1
+    elif [ "${arg_date2:8:1}" = "3" ] && ! nest_pas ${arg_date2:9:1} 2 9
+    then
+        erreur_txt="$erreur_txt\nerreur : la date de fin n'a pas le bon format"
+        erreur_arg=1
+    elif [ "${arg_date2:5:1}" = "1" ] && ! nest_pas ${arg_date2:6:1} 3 9
+    then
+        erreur_txt="$erreur_txt\nerreur : la date de fin n'a pas le bon format"
+        erreur_arg=1
+    fi
+fi
+
+#### erreur format de latitude et longitude
+
+
+reel='^[-]?[0-9]+([.][0-9]+)?$'
+
+if [ "$arg_lieu" = "-a" ]
+then
+    if ! [[ $arg_latitude1 =~ $reel ]]
+    then
+        erreur_txt="$erreur_txt\nerreur : la première latitude n'a pas le bon format"
+        erreur_arg=1
+    fi
+
+    if ! [[ $arg_latitude2 =~ $reel ]]
+    then
+        erreur_txt="$erreur_txt\nerreur : la deuxième latitude n'a pas le bon format"
+        erreur_arg=1
+    fi
+fi
+if [ "$arg_lieu" = "-g" ]
+then
+    if ! [[ $arg_longitude1 =~ $reel ]]
+    then
+        erreur_txt="$erreur_txt\nerreur : la première longitude n'a pas le bon format"
+        erreur_arg=1
+    fi
+
+    if ! [[ $arg_longitude2 =~ $reel ]]
+    then
+        erreur_txt="$erreur_txt\nerreur : la deuxième longitude n'a pas le bon format"
+        erreur_arg=1
+    fi
+fi
+if [ "$arg_lieu" = "-a-g" ] || [ "$arg_lieu" = "-g-a" ]
+then
+    if ! [[ $arg_longitude1 =~ $reel ]]
+    then
+        erreur_txt="$erreur_txt\nerreur : la première longitude n'a pas le bon format"
+        erreur_arg=1
+    fi
+    if ! [[ $arg_longitude2 =~ $reel ]]
+    then
+        erreur_txt="$erreur_txt\nerreur : la deuxième longitude n'a pas le bon format"
+        erreur_arg=1
+    fi
+
+    if ! [[ $arg_latitude1 =~ $reel ]]
+    then
+        erreur_txt="$erreur_txt\nerreur : la première latitude n'a pas le bon format"
+        erreur_arg=1
+    fi
+    if ! [[ $arg_latitude2 =~ $reel ]]
+    then
+        erreur_txt="$erreur_txt\nerreur : la deuxième latitude n'a pas le bon format"
+        erreur_arg=1
+    fi
+fi
+
+
+
+# peut on utiliser en même temps -t1 -t2 et -t3 ?
 
 
 
@@ -367,7 +482,7 @@ then
     exit 1
 elif [ $arg_help -eq 1 ]
 then
-    bash help.sh
+    less help.txt
 else
-    bash filtre.sh $arg_doc $arg_t $arg_p $arg_w $arg_h $arg_m $arg_lieu $arg_latitude1 $arg_latitude2 $arg_longitude1 $arg_longitude2 $arg_date1 $arg_date2 $arg_tris
+    bash filtre.sh $arg_doc $arg_lieu $arg_latitude1 $arg_latitude2 $arg_longitude1 $arg_longitude2 $arg_date1 $arg_date2 $arg_tris $arg_t $arg_p $arg_w $arg_h $arg_m 
 fi
