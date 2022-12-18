@@ -110,8 +110,8 @@ J --> F --> G[(temp.csv)] --> J
 
 ## Auteurs
 
-Gaétan Retel
-Clément Praud
+ - Gaétan Retel
+ - Clément Praud
 
 
 
