@@ -1,32 +1,87 @@
-
-arg_lieu="-a"
-arg_latitude1=$1
-arg_latitude2=$2
-erreur_txt=""
-
-
-
-reel='^[-]?[0-9]+([.][0-9]+)?$'
-
-if [ "$arg_lieu" = "-a" ]
+if [ "${10}" = "-t1" ] || [ "${10}" = "-t3" ] || [ "${11}" = "-p1" ] || [ "${11}" = "-p3" ] || [ "${12}" != "_" ] || [ "${13}" = "_" ] || [ "${14}" = "_" ]
 then
-    if ! [[ $arg_latitude1 =~ $reel ]]
-    then
-        erreur_txt="$erreur_txt\nerreur : la première latitude n'a pas le bon format"
-        erreur_arg=1
-    fi
-
-    if ! [[ $arg_latitude2 =~ $reel ]]
-    then
-        erreur_txt="$erreur_txt\nerreur : la deuxième latitude n'a pas le bon format"
-        erreur_arg=1
-    fi
+	if [ "$variable" = "" ]
+	then
+		variable="1"
+	else
+		variable="1,$variable"
+	fi
+	nbr_colonne=$((nbr_colonne+1))
 fi
 
-if [ $erreur_arg -eq 1 ]
+if [ "${10}" = "-t2" ] || [ "${10}" = "-t3" ] || [ "${11}" = "-p2" ] || [ "${11}" = "-p3" ] || [ "$7" != "_" ]
 then
-    #echo "pas ok"
-    echo -e "\033[31m$erreur_txt"
-    echo -e "\x1B[0m\nPour afficher l'aide, utilisez l'option --help, ou consultez le readme : \033[34mhttps://github.com/na-teag/CY-meteo/blob/main/README.md \x1B[0m"
-    exit 1
+	if [ "$variable" = "" ]
+	then
+		variable="2"
+	else
+		variable="2,$variable"
+	fi
+	nbr_colonne=$((nbr_colonne+1))
+fi
+
+if [ "${12}" = "-w" ]
+then
+	if [ "$variable" = "" ]
+	then
+		variable="4,5"
+	else
+		variable="4,5,$variable"
+	fi
+	nbr_colonne=$((nbr_colonne+2))
+fi
+
+if [ "${14}" = "-m" ]
+then
+	if [ "$variable" = "" ]
+	then
+		variable="6"
+	else
+		variable="6,$variable"
+	fi
+	nbr_colonne=$((nbr_colonne+1))
+fi
+
+if [ "${11}" != "_" ]
+then
+	if [ "$variable" = "" ]
+	then
+		variable="7"
+	else
+		variable="7,$variable"
+	fi
+	nbr_colonne=$((nbr_colonne+1))
+fi
+
+if [ "$2" != "_" ]
+then
+	if [ "$variable" = "" ]
+	then
+		variable="10"
+	else
+		variable="10,$variable"
+	fi
+	nbr_colonne=$((nbr_colonne+1))
+fi
+
+if [ "${10}" != "_" ]
+then
+	if [ "$variable" = "" ]
+	then
+		variable="11"
+	else
+		variable="11,$variable"
+	fi
+	nbr_colonne=$((nbr_colonne+1))
+fi
+
+if [ "${13}" != "_" ]
+then
+	if [ "$variable" = "" ]
+	then
+		variable="14"
+	else
+		variable="14,$variable"
+	fi
+	nbr_colonne=$((nbr_colonne+1))
 fi

@@ -6,23 +6,23 @@ liste_arg=""
 erreur_txt=""
 erreur_arg=0
 next_arg=0
-arg_date1=""
-arg_date2=""
-arg_latitude1=""
-arg_latitude2=""
-arg_longitude1=""
-arg_longitude2=""
-arg_t="0"
-arg_p="0"
-arg_w="0"
-arg_h="0"
-arg_m="0"
-arg_d="0"
-arg_f="0"
-arg_g="0"
-arg_a="0"
-arg_lieu="0"
-arg_tris="0"
+arg_date1="_"
+arg_date2="_"
+arg_latitude1="_"
+arg_latitude2="_"
+arg_longitude1="_"
+arg_longitude2="_"
+arg_t="_"
+arg_p="_"
+arg_w="_"
+arg_h="_"
+arg_m="_"
+arg_d="_"
+arg_f="_"
+arg_g="_"
+arg_a="_"
+arg_lieu="_"
+arg_tris="_"
 arg_help=0
 num0_9='^[0-9]'
 
@@ -78,7 +78,7 @@ do
     -t1)
         test_erreur $next_arg $erreur_txt
         next_arg=0
-        if [ "$arg_t" = "0" ] || [ "$arg_t" = "$k" ]
+        if [ "$arg_t" = "_" ] || [ "$arg_t" = "$k" ]
         then
             arg_t="$k"
         else
@@ -88,7 +88,7 @@ do
     -t2)
         test_erreur $next_arg $erreur_txt
         next_arg=0
-        if [ "$arg_t" = "0" ] || [ "$arg_t" = "$k" ]
+        if [ "$arg_t" = "_" ] || [ "$arg_t" = "$k" ]
         then
             arg_t="$k"
         else
@@ -98,7 +98,7 @@ do
     -t3)
         test_erreur $next_arg $erreur_txt
         next_arg=0
-        if [ "$arg_t" = "0" ] || [ "$arg_t" = "$k" ]
+        if [ "$arg_t" = "_" ] || [ "$arg_t" = "$k" ]
         then
             arg_t="$k"
         else
@@ -111,7 +111,7 @@ do
     -p1)
         test_erreur $next_arg $erreur_txt
         next_arg=0
-        if [ "$arg_p" = "0" ] || [ "$arg_p" = "$k" ]
+        if [ "$arg_p" = "_" ] || [ "$arg_p" = "$k" ]
         then
             arg_p="$k"
         else
@@ -121,7 +121,7 @@ do
     -p2)
         test_erreur $next_arg $erreur_txt
         next_arg=0
-        if [ "$arg_p" = "0" ] || [ "$arg_p" = "$k" ]
+        if [ "$arg_p" = "_" ] || [ "$arg_p" = "$k" ]
         then
             arg_p="$k"
         else
@@ -131,7 +131,7 @@ do
     -p3)
         test_erreur $next_arg $erreur_txt
         next_arg=0
-        if [ "$arg_p" = "0" ] || [ "$arg_p" = "$k" ]
+        if [ "$arg_p" = "_" ] || [ "$arg_p" = "$k" ]
         then
             arg_p="$k"
         else
@@ -140,7 +140,7 @@ do
         fi;;
     -d)
         test_erreur $next_arg $erreur_txt
-        if [ "$arg_d" = "0" ]
+        if [ "$arg_d" = "_" ]
         then
             arg_d="$k"
             next_arg=date_de_début_de_relevé
@@ -151,7 +151,7 @@ do
     --tab)
         test_erreur $next_arg $erreur_txt
         next_arg=0
-        if [ "$arg_tris" = "0" ] || [ "$arg_tris" = "$k" ]
+        if [ "$arg_tris" = "_" ] || [ "$arg_tris" = "$k" ]
         then
             arg_tris="$k"
         else
@@ -161,7 +161,7 @@ do
     --abr)
         test_erreur $next_arg $erreur_txt
         next_arg=0
-        if [ "$arg_tris" = "0" ] || [ "$arg_tris" = "$k" ]
+        if [ "$arg_tris" = "_" ] || [ "$arg_tris" = "$k" ]
         then
             arg_tris="$k"
         else
@@ -171,7 +171,7 @@ do
     --avl)
         test_erreur $next_arg $erreur_txt
         next_arg=0
-        if [ "$arg_tris" = "0" ] || [ "$arg_tris" = "$k" ]
+        if [ "$arg_tris" = "_" ] || [ "$arg_tris" = "$k" ]
         then
             arg_tris="$k"
         else
@@ -192,7 +192,7 @@ do
         arg_m="$k";;
     -f)
         test_erreur $next_arg $erreur_txt
-        if [ "$arg_f" = "0" ]
+        if [ "$arg_f" = "_" ]
         then
             arg_f="$k"
             next_arg=fichier
@@ -203,7 +203,7 @@ do
     -F)
         test_erreur $next_arg $erreur_txt
         next_arg=0
-        if [ "$arg_lieu" = "0" ] || [ "$arg_lieu" = "$k" ]
+        if [ "$arg_lieu" = "_" ] || [ "$arg_lieu" = "$k" ]
         then
             arg_lieu="$k"
         else
@@ -212,7 +212,7 @@ do
         fi;;
     -G)
         test_erreur $next_arg $erreur_txt
-        if [ "$arg_lieu" = "0" ] || [ "$arg_lieu" = "$k" ]
+        if [ "$arg_lieu" = "_" ] || [ "$arg_lieu" = "$k" ]
         then
             arg_lieu="$k"
         else
@@ -221,7 +221,7 @@ do
         fi;;
     -S)
         test_erreur $next_arg $erreur_txt
-        if [ "$arg_lieu" = "0" ] || [ "$arg_lieu" = "$k" ]
+        if [ "$arg_lieu" = "_" ] || [ "$arg_lieu" = "$k" ]
         then
             arg_lieu="$k"
         else
@@ -230,7 +230,7 @@ do
         fi;;
     -A)
         test_erreur $next_arg $erreur_txt
-        if [ "$arg_lieu" = "0" ] || [ "$arg_lieu" = "$k" ]
+        if [ "$arg_lieu" = "_" ] || [ "$arg_lieu" = "$k" ]
         then
             arg_lieu="$k"
         else
@@ -239,7 +239,7 @@ do
         fi;;
     -O)
         test_erreur $next_arg $erreur_txt
-        if [ "$arg_lieu" = "0" ] || [ "$arg_lieu" = "$k" ]
+        if [ "$arg_lieu" = "_" ] || [ "$arg_lieu" = "$k" ]
         then
             arg_lieu="$k"
         else
@@ -248,7 +248,7 @@ do
         fi;;
     -Q)
         test_erreur $next_arg $erreur_txt
-        if [ "$arg_lieu" = "0" ] || [ "$arg_lieu" = "$k" ]
+        if [ "$arg_lieu" = "_" ] || [ "$arg_lieu" = "$k" ]
         then
             arg_lieu="$k"
         else
@@ -257,7 +257,7 @@ do
         fi;;
     -a)
         test_erreur $next_arg $erreur_txt
-        if [ "$arg_lieu" = "0" ]
+        if [ "$arg_lieu" = "_" ]
         then
             arg_lieu="$k"
             next_arg="latitude1"
@@ -271,7 +271,7 @@ do
         fi;;
     -g)
         test_erreur $next_arg $erreur_txt
-        if [ "$arg_lieu" = "0" ]
+        if [ "$arg_lieu" = "_" ]
         then
             arg_lieu="$k"
             next_arg="longitude1"
@@ -343,14 +343,14 @@ do
 done
 
 
-###################### vérification de fin deboucle ########################################
+###################### vérification de fin de boucle ########################################
 
 
 #### erreur fichier
 
 test_erreur $next_arg $erreur_txt
 
-if [ "$arg_f" = "0" ]
+if [ "$arg_f" = "_" ]
 then
     erreur_txt="$erreur_txt\nerreur : aucun fichier spécifié, l'argument -f est nécéssaire"
     erreur_arg=1
@@ -359,7 +359,7 @@ fi
 
 #### erreur argument manquant
 
-if [ "$arg_t" = "0" ] && [ "$arg_p" = "0" ] && [ "$arg_m" = "0" ] && [ "$arg_h" = "0" ] && [ "$arg_w" = "0" ]
+if [ "$arg_t" = "_" ] && [ "$arg_p" = "_" ] && [ "$arg_m" = "_" ] && [ "$arg_h" = "_" ] && [ "$arg_w" = "_" ]
 then
     erreur_txt="$erreur_txt\nerreur : aucun type de donné à analyser spécifié, vous devez utiliser au moins une des options suivantes : -t -p -m -h -w"
     erreur_arg=1
@@ -368,7 +368,7 @@ fi
 
 #### erreur format de date
 
-if [ "$arg_d" != "0" ]
+if [ "$arg_d" != "_" ]
 then
     if  [ ${#arg_date1} -ne 10 ]
     then
@@ -465,9 +465,12 @@ then
     fi
 fi
 
+if [ "$arg_tris" = "_" ]
+then
+    $arg_tris="--avl"
+fi
 
-
-# peut on utiliser en même temps -t1 -t2 et -t3 ?
+# peut on utiliser en même temps -t1 -t2 et -t3 ? -> on fait comme on veut
 
 
 
