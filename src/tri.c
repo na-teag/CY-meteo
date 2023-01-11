@@ -16,7 +16,6 @@ int main(int argc, char *argv[]){
 
 
 
-
 // verification des arguments
 
 	int suivant=0;
@@ -47,22 +46,22 @@ int main(int argc, char *argv[]){
 	if(arg_fich_in == 0 || arg_fich_out == 0 || arg_tri == 0){
 		exit(1);
 	}
-	if(arg_tri != 0){
+	if(arg_sens != 0){
 		test=1;
 	}
 	if(arg_lieu != 0){
-		if(test+10 != argc){
+		if(test+12 != argc){
 			exit(1);
 		}
 	}else{
-		if(test+6 != argc){
+		if(test+7 != argc){
 			exit(1);
 		}
+
 	}
 	test=0;
 	
 
-	printf("test");
 
 
 // partie fichier
@@ -90,15 +89,14 @@ int main(int argc, char *argv[]){
 	
 // partie de pré-tri en cas d'option de lieu
 
+
 	#include "suppr_lignes.c"
 	suppr_lignes(fichier, fichier2, argv[arg_lieu+1], argv[arg_lieu+2], argv[arg_lieu+3], argv[arg_lieu+4], argv[arg_lieu+5]);
 
 
-
-
 	Station* debut = creerStation();
 	Station* station = debut;
-
+/*
 
 
 	fscanf(fichier, "%f", &c);
@@ -124,7 +122,7 @@ int main(int argc, char *argv[]){
 		printf("%.0f;%f\n", station->id, station->temperature_max);
 		station = station->filsG;
 	}
-
+*/
 	//free
 	fclose(fichier);
 	fclose(fichier2);

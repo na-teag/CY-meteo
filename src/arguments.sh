@@ -467,7 +467,7 @@ fi
 
 if [ "$arg_tris" = "_" ]
 then
-    $arg_tris="--avl"
+    arg_tris="--avl"
 fi
 
 # peut on utiliser en même temps -t1 -t2 et -t3 ? -> on fait comme on veut
