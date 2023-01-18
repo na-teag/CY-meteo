@@ -34,8 +34,7 @@ compare(){
 
 rm temp.csv
 #cp meteo_filtered_data_v1.csv temp.csv
-#head -n10 $1 | 
-tail -n +2 $1 | cut -d\; -f1,2,4,5,6,7,10,11,14 > temp.csv
+head -n500 $1 | tail -n +2  > temp.csv #| cut -d\; -f1,2,4,5,6,7,10,11,14
 
 
 arg_latitude1=$3
@@ -55,38 +54,38 @@ if [ "$2" != "_" ]
 then
 	if [ "$2" = "-F" ]
 	then
-		arg_latitude1=41.3
-		arg_latitude2=51.1
-		arg_longitude1=-7.2
-		arg_longitude2=9.6
+		arg_latitude1="40"
+		arg_latitude2="52"
+		arg_longitude1="-8"
+		arg_longitude2="10"
 	elif [ "$2" = "-G" ]
 	then
-		arg_latitude1=2
-		arg_latitude2=5.8
-		arg_longitude1=-54.6
-		arg_longitude2=-51.5
+		arg_latitude1="2"
+		arg_latitude2="6"
+		arg_longitude1="-55"
+		arg_longitude2="-51"
 	elif [ "$2" = "-S" ]
 	then
-		arg_latitude1=46
-		arg_latitude2=48
-		arg_longitude1=-57
-		arg_longitude2=-56
+		arg_latitude1="46"
+		arg_latitude2="48"
+		arg_longitude1="-57"
+		arg_longitude2="-56"
 	elif [ "$2" = "-A" ]
 	then
-		arg_latitude1=8
-		arg_latitude2=28
-		arg_longitude1=-85
-		arg_longitude2=-53
+		arg_latitude1="8"
+		arg_latitude2="28"
+		arg_longitude1="-85"
+		arg_longitude2="-53"
 	elif [ "$2" = "-O" ]
 	then
-		arg_latitude1=-35
-		arg_latitude2=15
-		arg_longitude1=42
-		arg_longitude2=114
+		arg_latitude1="-35"
+		arg_latitude2="15"
+		arg_longitude1="42"
+		arg_longitude2="114"
 	elif [ "$2" = "-Q" ]
 	then
-		arg_latitude1=-100
-		arg_latitude2=-58
+		arg_latitude1="-100"
+		arg_latitude2="-58"
 		lat_seul=1
 	elif [ "$2" = "-a" ]
 	then
@@ -126,74 +125,45 @@ then
 
 	nbr_ligne=`wc -l temp.csv | cut -d" " -f1`
 
+	#remplacer virgule par ; pour que lat et long soit séparé comme le reste
+	#$arg_latitude1<'"-50"'
+	sed 's/,/;/g' temp.csv > temp2.csv
+	if [ $lat_seul -eq 1 ]
+	then
+		cut -d";" -f1,2,4,5,6,7,10,11,12,15 temp2.csv | sed 's/;/ /g' | awk -v arg_latitude1="$arg_latitude1" -v arg_latitude2="$arg_latitude2" ' arg_latitude1 <= $10 && $10 <= arg_latitude2  {print $0; }' > temp.csv
+		#cut -d";" -f1,2,4,5,6,7,10,11,12,15 temp.csv | sed 's/;/ /g' | awk -v longitude1="$arg_longitude1" -v longitude2="$arg_longitude2" 'longitude1 <= $1 && $1 <= longitude2  {print $0; }'
+		#cut -d";" -f1,2 temp.csv | sed 's/;/ /g'   | awk '  $1>=1 && $1 < 9 {print $0; }'
 
-	rm -f temp2.csv
-	touch temp2.csv	
+	elif [ $long_seul -eq 1 ]
+	then
+		cut -d";" -f1,2,4,5,6,7,10,11,12,15 temp2.csv | sed 's/;/ /g' | awk -v arg_longitude1="$arg_longitude1" -v arg_longitude2="$arg_longitude2" ' arg_longitude1 <= $11 && $11 <= arg_longitude2   {print $0; }' > temp.csv
+	else
+		cut -d";" -f1,2,4,5,6,7,10,11,12,15 temp2.csv | sed 's/;/ /g' | awk -v arg_latitude1="$arg_latitude1" -v arg_latitude2="$arg_latitude2" -v arg_longitude1="$arg_longitude1" -v arg_longitude2="$arg_longitude2" ' arg_latitude1 <= $7 && $7 <= arg_latitude2 && arg_longitude1 <= $8 && $8 <= arg_longitude2 {print $0; }' > temp.csv  
+	fi
 
-	for (( i=1 ; $i <= $nbr_ligne ; i++))
-	do
-		lat=`sed -n ${i}p temp.csv | cut -d";" -f7 | cut -d"," -f1`
-		long=`sed -n ${i}p temp.csv | cut -d";" -f7 | cut -d"," -f2`
-		if [ $lat_seul -eq 1 ]
-		then
-			if  [ `compare $arg_latitude1 $lat` -eq 1 ] && [ `compare $lat $arg_latitude2` -eq 1 ]
-			then
-				test=1
-			else
-				test=0
-			fi
-		elif [ $long_seul -eq 1 ]
-		then
-			if  [ `compare $arg_longitude1 $long` -eq 1 ] && [ `compare $long $arg_longitude2` -eq 1 ]
-			then
-				test=1
-			else
-				test=0
-			fi
-		else
-			if  [ `compare $arg_longitude1 $long` -eq 1 ] && [ `compare $long $arg_longitude2` -eq 1 ] && [ `compare $arg_latitude1 $lat` -eq 1 ] && [ `compare $lat $arg_latitude2` -eq 1 ]
-			then
-				test=1
-			else
-				test=0
-			fi
-			#echo " `compare $arg_longitude1 $long` `compare $long $arg_longitude2` `compare $arg_latitude1 $lat` `compare $lat $arg_latitude2` "
-		fi
-		if [ $test -eq 1 ]
-		then
-			#cat temp.csv
-			echo "oui($i)"
-			head -n $i temp.csv | tail -n 1 >> temp2.csv
-		fi
-	done
 fi
+
+
+
+
+#compare(){
+	#awk -v n1="$1" -v n2="$2" { } # est ce que $1 <= $2 ?
+#}
+
+
+
+
+
+
 
 
 
 # sed -i -n 1d file
 
-20h07
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+nbr_ligne=`wc -l temp.csv`
+echo "$nbr_ligne" | cut -d" " -f1
 
 
 if [ "${10}" != "_" ]
@@ -250,7 +220,7 @@ fi
 #
 # verifier les retour des programes c
 # enlever la colonne des coordonées avant le tris avec les options obligatoires
-#
+# enlever le head -n100
 #
 #
 #
