@@ -34,7 +34,7 @@ compare(){
 
 rm temp.csv
 #cp meteo_filtered_data_v1.csv temp.csv
-head -n500 $1 | tail -n +2  > temp.csv #| cut -d\; -f1,2,4,5,6,7,10,11,14
+head -n10 $1 | tail -n +2  > temp.csv #| cut -d\; -f1,2,4,5,6,7,10,11,14
 
 
 arg_latitude1=$3
@@ -48,6 +48,7 @@ change=0
 
 
 
+cut -d";" -f1,2,4,5,6,7,10,11,12,14 temp.csv | sed 's/,/ /g' |sed 's/;/ /g' > temp2.csv #remplacer virgule par ; pour que lat et long soit séparé comme le reste
 
 
 if [ "$2" != "_" ]
@@ -125,84 +126,69 @@ then
 
 	nbr_ligne=`wc -l temp.csv | cut -d" " -f1`
 
-	#remplacer virgule par ; pour que lat et long soit séparé comme le reste
-	#$arg_latitude1<'"-50"'
-	sed 's/,/;/g' temp.csv > temp2.csv
+	
 	if [ $lat_seul -eq 1 ]
 	then
-		cut -d";" -f1,2,4,5,6,7,10,11,12,15 temp2.csv | sed 's/;/ /g' | awk -v arg_latitude1="$arg_latitude1" -v arg_latitude2="$arg_latitude2" ' arg_latitude1 <= $10 && $10 <= arg_latitude2  {print $0; }' > temp.csv
+		awk temp2.csv -v arg_latitude1="$arg_latitude1" -v arg_latitude2="$arg_latitude2" ' arg_latitude1 <= $10 && $10 <= arg_latitude2  {print $0; }' > temp.csv
 		#cut -d";" -f1,2,4,5,6,7,10,11,12,15 temp.csv | sed 's/;/ /g' | awk -v longitude1="$arg_longitude1" -v longitude2="$arg_longitude2" 'longitude1 <= $1 && $1 <= longitude2  {print $0; }'
 		#cut -d";" -f1,2 temp.csv | sed 's/;/ /g'   | awk '  $1>=1 && $1 < 9 {print $0; }'
 
 	elif [ $long_seul -eq 1 ]
 	then
-		cut -d";" -f1,2,4,5,6,7,10,11,12,15 temp2.csv | sed 's/;/ /g' | awk -v arg_longitude1="$arg_longitude1" -v arg_longitude2="$arg_longitude2" ' arg_longitude1 <= $11 && $11 <= arg_longitude2   {print $0; }' > temp.csv
+		awk temp2.csv -v arg_longitude1="$arg_longitude1" -v arg_longitude2="$arg_longitude2" ' arg_longitude1 <= $11 && $11 <= arg_longitude2   {print $0; }' > temp.csv
 	else
-		cut -d";" -f1,2,4,5,6,7,10,11,12,15 temp2.csv | sed 's/;/ /g' | awk -v arg_latitude1="$arg_latitude1" -v arg_latitude2="$arg_latitude2" -v arg_longitude1="$arg_longitude1" -v arg_longitude2="$arg_longitude2" ' arg_latitude1 <= $7 && $7 <= arg_latitude2 && arg_longitude1 <= $8 && $8 <= arg_longitude2 {print $0; }' > temp.csv  
+		awk temp2.csv -v arg_latitude1="$arg_latitude1" -v arg_latitude2="$arg_latitude2" -v arg_longitude1="$arg_longitude1" -v arg_longitude2="$arg_longitude2" ' arg_latitude1 <= $7 && $7 <= arg_latitude2 && arg_longitude1 <= $8 && $8 <= arg_longitude2 {print $0; }' > temp.csv  
 	fi
-
+	rm temp2.csv -f #boucle facultative, donc pas de changement de nom du dernier fichier mis a jour
+	mv temp.csv temp2.csv
 fi
 
 
 
 
-#compare(){
-	#awk -v n1="$1" -v n2="$2" { } # est ce que $1 <= $2 ?
-#}
-
-
-
-
-
-
-
-
-
-# sed -i -n 1d file
-
-
-
-nbr_ligne=`wc -l temp.csv`
-echo "$nbr_ligne" | cut -d" " -f1
-
 
 if [ "${10}" != "_" ]
 then
-	#cut temp.csv -d\; -f1,2,8 > temp2.csv
-	#./tri -f temp2.csv -o tmp.dat $9 ${10}
+	#cut temp2.csv -d" " -f1,2,8 > temp3.csv
+	#./tri -f temp3.csv -o tmp.dat $9 ${10}
 	#echo 'plot "tmp.dat"' | gnuplot --persist
 	test=1
 fi
 
 if [ "${11}" != "_" ]
 then
-	#cut temp.csv -d\; -f1,2,6 > temp2.csv
-	#./tri -f temp2.csv -o tmp.dat $9 ${11}
+	#cut temp2.csv -d" " -f1,2,6 > temp3.csv
+	#./tri -f temp3.csv -o tmp.dat $9 ${11}
 	#echo 'plot "tmp.dat"' | gnuplot --persist
 	test=1
 fi
 
 if [ "${12}" != "_" ]
 then
-	#cut temp.csv -d\; -f1,3,4 > temp2.csv
-	#./tri -f temp2.csv -o tmp.dat $9 ${12}
+	#cut temp2.csv -d" " -f1,3,4 > temp3.csv
+	#./tri -f temp3.csv -o tmp.dat $9 ${12}
 	#echo 'plot "tmp.dat"' | gnuplot --persist
 	test=1
 fi
 
 if [ "${13}" != "_" ]
 then
-	#cut temp.csv -d\; -f1,9 > temp2.csv
-	#./tri -f temp2.csv -o tmp.dat $9 ${13} -r
-	#echo 'plot "tmp.dat"' | gnuplot --persist
+	cut temp2.csv -d" " -f1,11 > temp3.csv
+	gcc -o tri tri.c -lm
+	chmod u+x -f tri
+	./tri -f temp3.csv -o tmp.dat $9 ${13}
+	# echo "ok"
+	echo 'plot "tmp.dat"' | gnuplot --persist
 	test=1
 fi
 
 if [ "${14}" != "_" ]
 then
-	#cut temp.csv -d\; -f1,5 > temp2.csv
-	#./tri -f temp2.csv -o tmp.dat $9 ${14} -r
-	#echo 'plot "tmp.dat"' | gnuplot --persist
+	cut temp2.csv -d" " -f1,5 > temp3.csv
+	gcc -o tri tri.c -lm
+	chmod u+x -f tri
+	./tri -f temp3.csv -o tmp.dat $9 ${14}
+	echo 'plot "tmp.dat"' | gnuplot --persist
 	test=1
 fi
 
@@ -221,8 +207,8 @@ fi
 # verifier les retour des programes c
 # enlever la colonne des coordonées avant le tris avec les options obligatoires
 # enlever le head -n100
-#
-#
+# vérifier le retour de toute les fonction en C (y compris les programmes de tri)
+# préciser dans le redame et le help que pour le -m, si les stations ont différentes altitude, la + grande sera conservée
 #
 #
 #
@@ -232,10 +218,10 @@ fi
 #
 # dans arguments.sh, regrouper les -t1/2/3 et -p1/2/ en une seule étape
 # changer _ en NULL
-#
-#
-#
-#
+# changer ordre alphabetique readme en ordre thematique
+# mettre que la date de début pour aller jusqu'au bout
+# faire une option pour exporter le graphique
+# option -m : nombre le +grand ne semble pas apparaitre dans le fichier trié
 #
 #
 #
