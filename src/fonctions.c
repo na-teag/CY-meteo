@@ -37,16 +37,6 @@ int min(int a, int b){
 	return b;
 }
 
-Station* creerStation(){
-	Station *station = malloc(sizeof(Station));
-	if(station == NULL){
-		printf("erreur d'allocution");
-		exit(1);
-	}
-	station->filsG = NULL;
-	station->filsD = NULL;
-	return station;
-}
 
 float convertir(char* chaine){
 	char* ptr;
@@ -63,6 +53,25 @@ void croissant(float *nbr1, float *nbr2){
 		*nbr1 = *nbr2;
 		*nbr2 = nbr3;
 	}
+}
+
+Stockage* fscan(FILE* fichier, Stockage* stockage){
+	int test, lettre;
+	do{
+		test=0;
+		fscanf(fichier, "%d %f %f", &stockage->id, &stockage->latitude, &stockage->longitude);
+		fgetc(fichier);
+		lettre = fgetc(fichier); // dans le fichier, certain relevé d'humidité n'ont aucunes valeurs, dans ce cas il faut passer à la ligne suivante
+		fseek(fichier, -1, 1);
+		while(!('0' <= lettre && lettre <= '9')){
+			lettre = fgetc(fichier);
+			test=1;
+		}
+		if(test==1){
+			fseek(fichier, -1, 1);
+		}
+	}while(test!=0);
+	fscanf(fichier, "%d\n", &stockage->donnee);
 }
 
 
@@ -134,6 +143,8 @@ void init(Stockage tab[]){
 	for(int i=0; i < 70; i++){
 		tab[i].id = -1;
 		tab[i].donnee = -1;
+		tab[i].latitude = -1;
+		tab[i].longitude = -1;
 	}
 }
 
@@ -141,40 +152,72 @@ void init(Stockage tab[]){
 
 
 
-Parbre CreerArbre(int id, int donnee){
+Parbre CreerArbre(Stockage stockage){
 	Parbre arbre =  malloc(sizeof(Arbre));
-	arbre->id = id;
-	arbre->donnee = donnee;
+	arbre->stockage.id = stockage.id;
+	arbre->stockage.donnee = stockage.donnee;
+	arbre->stockage.longitude = stockage.longitude;
+	arbre->stockage.latitude = stockage.latitude;
 	arbre->filsD = NULL;
 	arbre->filsG = NULL;
 	arbre->equilibre = 0;
 	return arbre;
 }
 
-Parbre recherche_arbre(Parbre arbre, int id){
-	if(arbre == NULL){
-		return NULL;
-	}else if(arbre->id == id){
-		return arbre;
-	}else if(id < arbre->id){
-		return recherche_arbre(arbre->filsG, id);
+
+Parbre recherche_arbre(Parbre arbre, int nbr, int mode){
+	if(mode==1){
+		if(arbre == NULL){
+			return NULL;
+		}else if(arbre->stockage.id == nbr){
+			return arbre;
+		}else if(nbr < arbre->stockage.id){
+			return recherche_arbre(arbre->filsG, nbr, mode);
+		}else{
+			return recherche_arbre(arbre->filsD, nbr, mode);
+		}
 	}else{
-		return recherche_arbre(arbre->filsD, id);
+		if(arbre == NULL){
+			return NULL;
+		}else if(arbre->stockage.donnee == nbr){
+			return arbre;
+		}else if(nbr < arbre->stockage.donnee){
+			return recherche_arbre(arbre->filsG, nbr, mode);
+		}else{
+			return recherche_arbre(arbre->filsD, nbr, mode);
+		}
 	}
 }
+	
 
-Parbre insertionAVL(Parbre arbre, int id, int donnee, int* h){
-	if(arbre == NULL){
-		*h=1;
-		return CreerArbre(id, donnee);
-	}else if(donnee < arbre->donnee){
-		arbre->filsG = insertionAVL(arbre->filsG, id, donnee, h);
-		*h = -*h;
-	}else if(donnee > arbre->donnee){
-		arbre->filsD = insertionAVL(arbre->filsD, id, donnee, h);
-	}else{
-		*h=0;
-		return arbre;
+
+Parbre insertionAVL(Parbre arbre, Stockage stockage, int* h, int mode){
+	if(mode == 1){
+		if(arbre == NULL){
+			*h=1;
+			return CreerArbre(stockage);
+		}else if(stockage.id < arbre->stockage.id){
+			arbre->filsG = insertionAVL(arbre->filsG, stockage, h, mode);
+			*h = -*h;
+		}else if(stockage.id > arbre->stockage.id){
+			arbre->filsD = insertionAVL(arbre->filsD, stockage, h, mode);
+		}else{
+			*h=0;
+			return arbre;
+		}
+	}else if(mode == 2){
+		if(arbre == NULL){
+			*h=1;
+			return CreerArbre(stockage);
+		}else if(stockage.donnee < arbre->stockage.donnee){
+			arbre->filsG = insertionAVL(arbre->filsG, stockage, h, mode);
+			*h = -*h;
+		}else if(stockage.donnee > arbre->stockage.donnee){
+			arbre->filsD = insertionAVL(arbre->filsD, stockage, h, mode);
+		}else{
+			*h=0;
+			return arbre;
+		}
 	}
 	if(*h != 0){
 		arbre->equilibre = arbre->equilibre + *h;
@@ -187,21 +230,34 @@ Parbre insertionAVL(Parbre arbre, int id, int donnee, int* h){
 	}
 	return arbre;
 }
+/*
+void suppr_arbre_autre(Parbre arbre){
+	if(arbre->autre!=NULL){
+		suppr_arbre_autre(arbre->autre);
+	}
+	free(arbre);
+}*/
 
 void suppr_arbre(Parbre arbre){
+	if(arbre==NULL){
+		return;
+	}
 	if(arbre->filsD != NULL){
 		suppr_arbre(arbre->filsD);
 	}
 	if(arbre->filsG != NULL){
 		suppr_arbre(arbre->filsG);
 	}
+	if(arbre->autre != NULL){
+		suppr_arbre(arbre->autre);
+	}
 	free(arbre);
 }
 
 
 Parbre rotG(Parbre arbre){
-	Parbre pivot = arbre->filsD;
 	int eq_a, eq_p;
+	Parbre pivot = arbre->filsD;
 	arbre->filsD = pivot->filsG;
 	pivot->filsG = arbre;
 	eq_a = arbre->equilibre;
@@ -213,14 +269,14 @@ Parbre rotG(Parbre arbre){
 }
 
 Parbre rotD(Parbre arbre){
-	Parbre pivot = arbre->filsG;
 	int eq_a, eq_p;
-	arbre->filsG = pivot->filsD;
-	pivot->filsD = arbre;
+	Parbre pivot = arbre->filsG;
+	arbre->filsG = pivot->filsD ;
+	pivot->filsD= arbre;
 	eq_a = arbre->equilibre;
 	eq_p = pivot->equilibre;
-	arbre->equilibre = eq_a-max(eq_p, 0)+1;
-	pivot->equilibre = min(eq_a+2, min(eq_a+eq_p+2, eq_p+1));
+	arbre->equilibre = eq_a-min(eq_p, 0)+1;
+	pivot->equilibre = max(eq_a+2, max(eq_a+eq_p+2, eq_p+1));
 	arbre = pivot;
 	return arbre;
 }
@@ -252,17 +308,48 @@ Parbre equilibrage(Parbre arbre){
 	return arbre;
 }
 
-void parcours_postfixe(FILE* fichier, Parbre arbre){
+
+void parcours(FILE* fichier, Parbre arbre){
 	if(arbre != NULL){
-		parcours_postfixe(fichier, arbre->filsG);
-		parcours_postfixe(fichier, arbre->filsD);
-		fprintf(fichier, "%d %d\n", arbre->id, arbre->donnee);
+		parcours(fichier, arbre->filsD);
+		fprintf(fichier, "%f\t%f\t%d\n", arbre->stockage.longitude, arbre->stockage.latitude, arbre->stockage.donnee);
+		parcours(fichier, arbre->autre);
+		parcours(fichier, arbre->filsG);
 	}
+}
+
+Parbre autre(Parbre arbre){
+	if(arbre->autre!=NULL){
+		return autre(arbre->autre);
+	}
+	return arbre;
 }
 
 
 
-
+Parbre insertionABR(Parbre arbre, Stockage stockage, int mode){
+	if(mode == 1){
+		if(arbre == NULL){
+			return CreerArbre(stockage);
+		}else if(stockage.id < arbre->stockage.id){
+			arbre->filsG = insertionABR(arbre->filsG, stockage, mode);
+		}else if(stockage.id > arbre->stockage.id){
+			arbre->filsD = insertionABR(arbre->filsD, stockage, mode);
+		}
+		return arbre;
+	}else{
+		if(arbre == NULL){
+			return CreerArbre(stockage);
+		}else if(stockage.donnee < arbre->stockage.donnee){
+			arbre->filsG = insertionABR(arbre->filsG, stockage, mode);
+		}else if(stockage.donnee > arbre->stockage.donnee){
+			arbre->filsD = insertionABR(arbre->filsD, stockage, mode);
+		}else if(stockage.donnee = arbre->stockage.donnee && stockage.id != arbre->stockage.id){
+			arbre->autre = insertionABR(arbre->autre, stockage, mode);
+		}
+		return arbre;
+	}
+}
 
 
 
@@ -440,7 +527,7 @@ if (a==NULL) return -1;return 1 + max(hauteur(a->filsG), hauteur(a->filsD));
 
 void ABVersTabRec(Parbre a, int pos, TArbBin *T, int info){
 if (a!=NULL){
-T[pos].elmt = a->donnee;
+T[pos].elmt = a->stockage.donnee;
 T[pos].info = (info ? a->equilibre : hauteur(a));
 ABVersTabRec(a->filsG, 2 * pos + 1, T, info);
 ABVersTabRec(a->filsD, 2 * pos + 2, T, info);

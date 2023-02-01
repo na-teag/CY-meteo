@@ -32,9 +32,9 @@ compare(){
 
 
 
-rm temp.csv
+rm temp.csv -f
 #cp meteo_filtered_data_v1.csv temp.csv
-head -n10 $1 | tail -n +2  > temp.csv #| cut -d\; -f1,2,4,5,6,7,10,11,14
+ head -n100 $1 | tail -n +2  > temp.csv #| cut -d\; -f1,2,4,5,6,7,10,11,14
 
 
 arg_latitude1=$3
@@ -48,7 +48,7 @@ change=0
 
 
 
-cut -d";" -f1,2,4,5,6,7,10,11,12,14 temp.csv | sed 's/,/ /g' |sed 's/;/ /g' > temp2.csv #remplacer virgule par ; pour que lat et long soit séparé comme le reste
+cut -d";" -f1,2,4,5,6,7,10,11,12,14 temp.csv | sed 's/,/ /g' |sed 's/;/ /g' | sed 's/  / 0 /g' | sed 's/  / 0 /g' > temp2.csv #remplacer virgule par ; pour que lat et long soit séparé comme le reste
 
 
 if [ "$2" != "_" ]
@@ -146,6 +146,8 @@ fi
 
 
 
+# rm temp2.csv -f
+# mv temp.csv temp2.csv
 
 if [ "${10}" != "_" ]
 then
@@ -173,23 +175,35 @@ fi
 
 if [ "${13}" != "_" ]
 then
-	cut temp2.csv -d" " -f1,11 > temp3.csv
+	cut temp2.csv -d" " -f1,7,8,11 > temp3.csv
 	gcc -o tri tri.c -lm
 	chmod u+x -f tri
 	./tri -f temp3.csv -o tmp.dat $9 ${13}
 	# echo "ok"
-	echo 'plot "tmp.dat"' | gnuplot --persist
-	test=1
+	echo -e '
+	set view map
+	set dgrid3d 100,100,2
+	unset key
+	unset surface
+	set pm3d at b
+	splot "tmp.dat"' | gnuplot --persist 2>/dev/null
 fi
 
 if [ "${14}" != "_" ]
 then
-	cut temp2.csv -d" " -f1,5 > temp3.csv
+	awk '{print $1" "$2" "$3" "$4" "$6" "$7" "$8" "$9" "$10" "$5 }' temp2.csv > temp.csv
+	cut -d" " -f1,6,7,10 temp.csv > temp3.csv
 	gcc -o tri tri.c -lm
 	chmod u+x -f tri
 	./tri -f temp3.csv -o tmp.dat $9 ${14}
-	echo 'plot "tmp.dat"' | gnuplot --persist
-	test=1
+	echo -e '
+	set view map
+	set dgrid3d 100,100,2
+	unset key
+	unset surface
+	set pm3d at b
+	splot "tmp.dat"' | gnuplot --persist 2>/dev/null
+	# splot "tmp.dat" using 1:2:3 with pm3d title"X"' | gnuplot --persist
 fi
 
 
@@ -204,12 +218,11 @@ fi
 
 #       A FAIRE
 #
-# verifier les retour des programes c
 # enlever la colonne des coordonées avant le tris avec les options obligatoires
 # enlever le head -n100
 # vérifier le retour de toute les fonction en C (y compris les programmes de tri)
 # préciser dans le redame et le help que pour le -m, si les stations ont différentes altitude, la + grande sera conservée
-#
+# mettre les titres sur les graphiques et le nom des axes
 #
 #
 #
@@ -217,12 +230,11 @@ fi
 #       A FAIRE SI Y'A LE TEMPS
 #
 # dans arguments.sh, regrouper les -t1/2/3 et -p1/2/ en une seule étape
-# changer _ en NULL
 # changer ordre alphabetique readme en ordre thematique
 # mettre que la date de début pour aller jusqu'au bout
 # faire une option pour exporter le graphique
-# option -m : nombre le +grand ne semble pas apparaitre dans le fichier trié
-#
+# option -m/h --tab : nombre le +grand ne semble pas apparaitre dans le fichier trié
+# verifier boucle affichage tableau 70/69 et 0/1
 #
 #
 #
