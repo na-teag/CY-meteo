@@ -45,7 +45,7 @@ int min(int a, int b);
 float convertir(char* chaine);
 void croissant(float *nbr1, float *nbr2);
 int recherche(Stockage tab[], int droite, int gauche, int element);
-Stockage* fscan(FILE* fichier, Stockage *stockage);
+Stockage* fscan(FILE* fichier, Stockage* stockage);
 void triRapide(Stockage tab[], int taille, int colonne);
 void rapideRec(Stockage tab[], int taille, int debut, int fin, int colonne);
 int partition(Stockage tab[], int taille, int debut, int fin, int colonne);

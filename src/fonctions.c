@@ -55,11 +55,19 @@ void croissant(float *nbr1, float *nbr2){
 	}
 }
 
+void affichtab(Stockage tab[70]){
+	int j=1;
+	for(int i=0; i<=70; i++){
+		printf("%d, tab[%d] (%d) %d\n", tab[i].donnee, i, j, tab[i].id);
+		j++;
+	}
+}
 Stockage* fscan(FILE* fichier, Stockage* stockage){
 	int test, lettre;
 	do{
 		test=0;
 		fscanf(fichier, "%d %f %f", &stockage->id, &stockage->latitude, &stockage->longitude);
+		//fscanf(fichier, "%f\t%f\t%d\t%d\n", &stockage->longitude, &stockage->latitude, &stockage->donnee, &stockage->id);
 		fgetc(fichier);
 		lettre = fgetc(fichier); // dans le fichier, certain relevé d'humidité n'ont aucunes valeurs, dans ce cas il faut passer à la ligne suivante
 		fseek(fichier, -1, 1);
@@ -72,6 +80,7 @@ Stockage* fscan(FILE* fichier, Stockage* stockage){
 		}
 	}while(test!=0);
 	fscanf(fichier, "%d\n", &stockage->donnee);
+	
 }
 
 
@@ -97,6 +106,9 @@ int partition(Stockage tab[], int taille, int debut, int fin, int colonne){
 				temp=tab[i];
 				tab[i]=tab[j];
 				tab[j]=temp;
+			}
+			if(tab[j].donnee == 100){
+				//printf("test");
 			}
 		}
 	}
@@ -140,7 +152,7 @@ int recherche(Stockage tab[], int droite, int gauche, int element){
 }
 
 void init(Stockage tab[]){
-	for(int i=0; i < 70; i++){
+	for(int i=0; i <= 70; i++){
 		tab[i].id = -1;
 		tab[i].donnee = -1;
 		tab[i].latitude = -1;
@@ -313,6 +325,7 @@ void parcours(FILE* fichier, Parbre arbre){
 	if(arbre != NULL){
 		parcours(fichier, arbre->filsD);
 		fprintf(fichier, "%f\t%f\t%d\n", arbre->stockage.longitude, arbre->stockage.latitude, arbre->stockage.donnee);
+		printf("%f\t%f\t%d\t%d\n", arbre->stockage.longitude, arbre->stockage.latitude, arbre->stockage.donnee, arbre->stockage.id);
 		parcours(fichier, arbre->autre);
 		parcours(fichier, arbre->filsG);
 	}
@@ -527,7 +540,7 @@ if (a==NULL) return -1;return 1 + max(hauteur(a->filsG), hauteur(a->filsD));
 
 void ABVersTabRec(Parbre a, int pos, TArbBin *T, int info){
 if (a!=NULL){
-T[pos].elmt = a->stockage.donnee;
+T[pos].elmt = a->stockage.id;
 T[pos].info = (info ? a->equilibre : hauteur(a));
 ABVersTabRec(a->filsG, 2 * pos + 1, T, info);
 ABVersTabRec(a->filsD, 2 * pos + 2, T, info);

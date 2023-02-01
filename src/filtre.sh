@@ -34,7 +34,7 @@ compare(){
 
 rm temp.csv -f
 #cp meteo_filtered_data_v1.csv temp.csv
- head -n100 $1 | tail -n +2  > temp.csv #| cut -d\; -f1,2,4,5,6,7,10,11,14
+ head -n100  $1| tail -n +2  > temp.csv #| cut -d\; -f1,2,4,5,6,7,10,11,14
 
 
 arg_latitude1=$3
@@ -48,7 +48,7 @@ change=0
 
 
 
-cut -d";" -f1,2,4,5,6,7,10,11,12,14 temp.csv | sed 's/,/ /g' |sed 's/;/ /g' | sed 's/  / 0 /g' | sed 's/  / 0 /g' > temp2.csv #remplacer virgule par ; pour que lat et long soit séparé comme le reste
+cut -d";" -f1,2,4,5,6,7,10,11,12,14 temp.csv | sed 's/,/ /g' | sed 's/;/ /g'  > temp2.csv #remplacer virgule par ; pour que lat et long soit séparé comme le reste
 
 
 if [ "$2" != "_" ]
@@ -167,20 +167,30 @@ fi
 
 if [ "${12}" != "_" ]
 then
-	#cut temp2.csv -d" " -f1,3,4 > temp3.csv
-	#./tri -f temp3.csv -o tmp.dat $9 ${12}
-	#echo 'plot "tmp.dat"' | gnuplot --persist
-	test=1
+	cut temp2.csv -d" " -f1,3,4,7,8 > temp3.csv
+	gcc -o tri2 tri2.c -lm
+	chmod u+x -f tri2
+	# ./tri2 -f temp3.csv -o tmp.dat $9 ${12}
+	echo -e '
+	set view map
+	set dgrid3d 100,100,2
+	unset key
+	unset surface
+	set pm3d at b
+	splot "tmp.dat"' | gnuplot --persist 2>/dev/null
 fi
 
 if [ "${13}" != "_" ]
 then
-	cut temp2.csv -d" " -f1,7,8,11 > temp3.csv
+	cut temp2.csv -d" " -f1,7,8,11 | awk '$1!="" && $2!="" && $3!="" && $4!="" {print $0}' > temp3.csv
 	gcc -o tri tri.c -lm
 	chmod u+x -f tri
 	./tri -f temp3.csv -o tmp.dat $9 ${13}
 	# echo "ok"
 	echo -e '
+	set xlabel "longitude"
+	set ylabel "latitude"
+	set title "altitude des stations"
 	set view map
 	set dgrid3d 100,100,2
 	unset key
@@ -192,11 +202,16 @@ fi
 if [ "${14}" != "_" ]
 then
 	awk '{print $1" "$2" "$3" "$4" "$6" "$7" "$8" "$9" "$10" "$5 }' temp2.csv > temp.csv
-	cut -d" " -f1,6,7,10 temp.csv > temp3.csv
+	cut -d" " -f1,6,7,10 temp.csv | awk '$1!="" && $2!="" && $3!="" && $4!="" {print $0}' > temp3.csv
 	gcc -o tri tri.c -lm
 	chmod u+x -f tri
 	./tri -f temp3.csv -o tmp.dat $9 ${14}
+	awk '$3 <= 100 {print $0}' tmp.dat > temp.csv
+	cat temp.csv > tmp.dat
 	echo -e '
+	set xlabel "longitude"
+	set ylabel "latitude"
+	set title "humiditées maximales par station"
 	set view map
 	set dgrid3d 100,100,2
 	unset key
