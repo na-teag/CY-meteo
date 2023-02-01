@@ -238,7 +238,7 @@ fi
 # vérifier le retour de toute les fonction en C (y compris les programmes de tri)
 # préciser dans le redame et le help que pour le -m, si les stations ont différentes altitude, la + grande sera conservée
 # mettre les titres sur les graphiques et le nom des axes
-#
+# faire un makefile
 #
 #
 #
