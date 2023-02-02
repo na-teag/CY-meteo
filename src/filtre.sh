@@ -34,7 +34,7 @@ compare(){
 
 rm temp.csv -f
 #cp meteo_filtered_data_v1.csv temp.csv
- head -n100  $1| tail -n +2  > temp.csv #| cut -d\; -f1,2,4,5,6,7,10,11,14
+ head -n100000  $1| tail -n +2  > temp.csv #| cut -d\; -f1,2,4,5,6,7,10,11,14
 
 
 arg_latitude1=$3
@@ -64,7 +64,7 @@ then
 		arg_latitude1="2"
 		arg_latitude2="6"
 		arg_longitude1="-55"
-		arg_longitude2="-51"
+		arg_longitude2="-50"
 	elif [ "$2" = "-S" ]
 	then
 		arg_latitude1="46"
@@ -79,7 +79,7 @@ then
 		arg_longitude2="-53"
 	elif [ "$2" = "-O" ]
 	then
-		arg_latitude1="-35"
+		arg_latitude1="-45"
 		arg_latitude2="15"
 		arg_longitude1="42"
 		arg_longitude2="114"
@@ -129,15 +129,15 @@ then
 	
 	if [ $lat_seul -eq 1 ]
 	then
-		awk temp2.csv -v arg_latitude1="$arg_latitude1" -v arg_latitude2="$arg_latitude2" ' arg_latitude1 <= $10 && $10 <= arg_latitude2  {print $0; }' > temp.csv
+		awk -v arg_latitude1="$arg_latitude1" -v arg_latitude2="$arg_latitude2" ' arg_latitude1 <= $10 && $10 <= arg_latitude2  {print $0; }' temp2.csv > temp.csv
 		#cut -d";" -f1,2,4,5,6,7,10,11,12,15 temp.csv | sed 's/;/ /g' | awk -v longitude1="$arg_longitude1" -v longitude2="$arg_longitude2" 'longitude1 <= $1 && $1 <= longitude2  {print $0; }'
 		#cut -d";" -f1,2 temp.csv | sed 's/;/ /g'   | awk '  $1>=1 && $1 < 9 {print $0; }'
 
 	elif [ $long_seul -eq 1 ]
 	then
-		awk temp2.csv -v arg_longitude1="$arg_longitude1" -v arg_longitude2="$arg_longitude2" ' arg_longitude1 <= $11 && $11 <= arg_longitude2   {print $0; }' > temp.csv
+		awk -v arg_longitude1="$arg_longitude1" -v arg_longitude2="$arg_longitude2" ' arg_longitude1 <= $11 && $11 <= arg_longitude2   {print $0; }' temp2.csv > temp.csv
 	else
-		awk temp2.csv -v arg_latitude1="$arg_latitude1" -v arg_latitude2="$arg_latitude2" -v arg_longitude1="$arg_longitude1" -v arg_longitude2="$arg_longitude2" ' arg_latitude1 <= $7 && $7 <= arg_latitude2 && arg_longitude1 <= $8 && $8 <= arg_longitude2 {print $0; }' > temp.csv  
+		awk -v arg_latitude1="$arg_latitude1" -v arg_latitude2="$arg_latitude2" -v arg_longitude1="$arg_longitude1" -v arg_longitude2="$arg_longitude2" ' arg_latitude1<=$7 && $7<=arg_latitude2 && arg_longitude1<=$8 && $8<=arg_longitude2 {print $0} ' temp2.csv > temp.csv
 	fi
 	rm temp2.csv -f #boucle facultative, donc pas de changement de nom du dernier fichier mis a jour
 	mv temp.csv temp2.csv
@@ -145,9 +145,6 @@ fi
 
 
 
-
-# rm temp2.csv -f
-# mv temp.csv temp2.csv
 
 if [ "${10}" != "_" ]
 then
@@ -167,17 +164,20 @@ fi
 
 if [ "${12}" != "_" ]
 then
-	cut temp2.csv -d" " -f1,3,4,7,8 > temp3.csv
-	gcc -o tri2 tri2.c -lm
-	chmod u+x -f tri2
-	# ./tri2 -f temp3.csv -o tmp.dat $9 ${12}
+	cut temp2.csv -d" " -f1,3,4,7,8 | awk '$1!="" && $2!="" && $3!="" && $4!="" {print $0}' > temp3.csv
+	gcc -o tri tri.c -lm
+	chmod u+x -f tri
+	./tri -f temp3.csv -o tmp.dat $9 ${12}
 	echo -e '
-	set view map
-	set dgrid3d 100,100,2
-	unset key
-	unset surface
-	set pm3d at b
-	splot "tmp.dat"' | gnuplot --persist 2>/dev/null
+	set xlabel "longitude"
+	set ylabel "latitude"
+	set title "graphique vectoriel des vents"
+	set xtics rotated by 90
+	set ytics
+	set xrange [*:*]
+	set yrange [*:*]
+	set autoscale noextend
+	plot "tmp.dat" using 2:3:4:5 with vectors arrowstyle 3 notitle' | gnuplot --persist 2>/dev/null
 fi
 
 if [ "${13}" != "_" ]
@@ -214,6 +214,7 @@ then
 	set title "humiditées maximales par station"
 	set view map
 	set dgrid3d 100,100,2
+	set palette rgbformulae 7,5,15
 	unset key
 	unset surface
 	set pm3d at b

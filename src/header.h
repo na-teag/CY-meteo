@@ -10,21 +10,15 @@
 
 
 
-typedef struct station{ // structure pour l'option -t1
-	float id;
-	float somme_tot;
-	int compteur;
-	float temperature_min;
-	float temperature_max;
-	struct station* filsG;
-	struct station* filsD;
-}Station;
-
 typedef struct stockage{
 	int id;
 	int donnee;
+	int donnee2;
+	int moyenne;
+	float moyenne2;
 	float latitude;
 	float longitude;
+
 }Stockage;
 
 typedef struct arbre{
@@ -59,6 +53,6 @@ Parbre rotD(Parbre arbre);
 Parbre double_rotG(Parbre arbre);
 Parbre double_rotD(Parbre arbre);
 Parbre equilibrage(Parbre arbre);
-void parcours(FILE* fichier, Parbre arbre);
+void parcours(FILE* fichier, Parbre arbre, int mode);
 void parcours_remplir(Parbre arbre, Parbre ancien, int *h);
 Parbre insertionABR(Parbre arbre, Stockage stockage, int mode);

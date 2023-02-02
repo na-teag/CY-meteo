@@ -84,11 +84,11 @@ Stockage* fscan(FILE* fichier, Stockage* stockage){
 }
 
 
-int partition(Stockage tab[], int taille, int debut, int fin, int colonne){
+int partition(Stockage tab[], int taille, int debut, int fin, int mode){
     int pivot;
     int i=debut-1;
     Stockage temp;
-	if(colonne == 1){
+	if(mode == 1){
 		pivot=tab[fin].id;
 		for(int j=debut; j<= fin-1; j++){
 			if(tab[j].id <= pivot){
@@ -98,7 +98,7 @@ int partition(Stockage tab[], int taille, int debut, int fin, int colonne){
 				tab[j]=temp;
 			}
 		}
-	}else{
+	}else if(mode==2){
 		pivot=tab[fin].donnee;
 		for(int j=debut; j<= fin-1; j++){
 			if(tab[j].donnee <= pivot){
@@ -118,12 +118,12 @@ int partition(Stockage tab[], int taille, int debut, int fin, int colonne){
 	return i+1;
 }
 
-void rapideRec(Stockage tab[], int taille, int debut, int fin, int colonne){
+void rapideRec(Stockage tab[], int taille, int debut, int fin, int mode){
     int pivot;
     if(debut < fin ){
-        pivot = partition(tab, taille, debut, fin, colonne);
-        rapideRec(tab, taille, debut, pivot-1, colonne);
-        rapideRec(tab, taille, pivot+1, fin, colonne);
+        pivot = partition(tab, taille, debut, fin, mode);
+        rapideRec(tab, taille, debut, pivot-1, mode);
+        rapideRec(tab, taille, pivot+1, fin, mode);
     }
 }
 
@@ -155,6 +155,8 @@ void init(Stockage tab[]){
 	for(int i=0; i <= 70; i++){
 		tab[i].id = -1;
 		tab[i].donnee = -1;
+		tab[i].moyenne = 0;
+		tab[i].moyenne2 = 0;
 		tab[i].latitude = -1;
 		tab[i].longitude = -1;
 	}
@@ -164,10 +166,15 @@ void init(Stockage tab[]){
 
 
 
+
+
 Parbre CreerArbre(Stockage stockage){
 	Parbre arbre =  malloc(sizeof(Arbre));
 	arbre->stockage.id = stockage.id;
 	arbre->stockage.donnee = stockage.donnee;
+	arbre->stockage.donnee2 += stockage.donnee2;
+	arbre->stockage.moyenne += stockage.moyenne;
+	arbre->stockage.moyenne2 += stockage.moyenne2;
 	arbre->stockage.longitude = stockage.longitude;
 	arbre->stockage.latitude = stockage.latitude;
 	arbre->filsD = NULL;
@@ -321,13 +328,24 @@ Parbre equilibrage(Parbre arbre){
 }
 
 
-void parcours(FILE* fichier, Parbre arbre){
-	if(arbre != NULL){
-		parcours(fichier, arbre->filsD);
-		fprintf(fichier, "%f\t%f\t%d\n", arbre->stockage.longitude, arbre->stockage.latitude, arbre->stockage.donnee);
-		printf("%f\t%f\t%d\t%d\n", arbre->stockage.longitude, arbre->stockage.latitude, arbre->stockage.donnee, arbre->stockage.id);
-		parcours(fichier, arbre->autre);
-		parcours(fichier, arbre->filsG);
+void parcours(FILE* fichier, Parbre arbre, int mode){
+	if(mode == 1){
+		if(arbre != NULL){
+			parcours(fichier, arbre->filsD, mode);
+			fprintf(fichier, "%f\t%f\t%d\n", arbre->stockage.longitude, arbre->stockage.latitude, arbre->stockage.donnee);
+			//printf("%f\t%f\t%d\t%d\n", arbre->stockage.longitude, arbre->stockage.latitude, arbre->stockage.donnee, arbre->stockage.id);
+			parcours(fichier, arbre->autre, mode);
+			parcours(fichier, arbre->filsG, mode);
+		}
+	}else if(mode == 2){
+		if(arbre != NULL){
+			parcours(fichier, arbre->filsG, mode);
+			//fprintf(fichier, "%f\t%f\t%d\n", arbre->stockage.longitude, arbre->stockage.latitude, arbre->stockage.donnee);
+			fprintf(fichier, "%d\t%f\t%f\t%f\t%f\n",arbre->stockage.id ,arbre->stockage.longitude, arbre->stockage.latitude, ((arbre->stockage.moyenne/arbre->stockage.donnee)*3.14159)/180, arbre->stockage.moyenne2/arbre->stockage.donnee);
+			//printf("%f\t%f\t%d\t%d\n", arbre->stockage.longitude, arbre->stockage.latitude, arbre->stockage.donnee, arbre->stockage.id);
+			parcours(fichier, arbre->autre, mode);
+			parcours(fichier, arbre->filsD, mode);
+		}
 	}
 }
 
@@ -363,17 +381,6 @@ Parbre insertionABR(Parbre arbre, Stockage stockage, int mode){
 		return arbre;
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 
