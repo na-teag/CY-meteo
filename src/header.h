@@ -15,6 +15,8 @@ typedef struct stockage{
 	int donnee;
 	int donnee2;
 	int moyenne;
+	float min;
+	float max;
 	float moyenne2;
 	float latitude;
 	float longitude;

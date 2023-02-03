@@ -152,13 +152,15 @@ int recherche(Stockage tab[], int droite, int gauche, int element){
 }
 
 void init(Stockage tab[]){
-	for(int i=0; i <= 70; i++){
-		tab[i].id = -1;
+	for(int i=0; i <= 70; i++){	// oui, le 70 est inclu. pk ya pas de seg fault on est pas trop sur
+		tab[i].id = -1;			// mais sans ça il manque une case du tableau
 		tab[i].donnee = -1;
 		tab[i].moyenne = 0;
 		tab[i].moyenne2 = 0;
 		tab[i].latitude = -1;
 		tab[i].longitude = -1;
+		tab[i].min = -1;
+		tab[i].max = -1;
 	}
 }
 
@@ -172,9 +174,11 @@ Parbre CreerArbre(Stockage stockage){
 	Parbre arbre =  malloc(sizeof(Arbre));
 	arbre->stockage.id = stockage.id;
 	arbre->stockage.donnee = stockage.donnee;
-	arbre->stockage.donnee2 += stockage.donnee2;
-	arbre->stockage.moyenne += stockage.moyenne;
-	arbre->stockage.moyenne2 += stockage.moyenne2;
+	arbre->stockage.donnee2 = stockage.donnee2;
+	arbre->stockage.moyenne = stockage.moyenne;
+	arbre->stockage.min = stockage.moyenne2;
+	arbre->stockage.max = stockage.moyenne2;
+	arbre->stockage.moyenne2 = stockage.moyenne2;
 	arbre->stockage.longitude = stockage.longitude;
 	arbre->stockage.latitude = stockage.latitude;
 	arbre->filsD = NULL;
@@ -182,6 +186,7 @@ Parbre CreerArbre(Stockage stockage){
 	arbre->equilibre = 0;
 	return arbre;
 }
+
 
 
 Parbre recherche_arbre(Parbre arbre, int nbr, int mode){
@@ -330,20 +335,27 @@ Parbre equilibrage(Parbre arbre){
 
 void parcours(FILE* fichier, Parbre arbre, int mode){
 	if(mode == 1){
-		if(arbre != NULL){
+		if(arbre != NULL){// mode pour l'humidité et l'altitude
 			parcours(fichier, arbre->filsD, mode);
 			fprintf(fichier, "%f\t%f\t%d\n", arbre->stockage.longitude, arbre->stockage.latitude, arbre->stockage.donnee);
 			//printf("%f\t%f\t%d\t%d\n", arbre->stockage.longitude, arbre->stockage.latitude, arbre->stockage.donnee, arbre->stockage.id);
 			parcours(fichier, arbre->autre, mode);
 			parcours(fichier, arbre->filsG, mode);
 		}
-	}else if(mode == 2){
+	}else if(mode == 2){ // mode pour les vents
 		if(arbre != NULL){
 			parcours(fichier, arbre->filsG, mode);
 			//fprintf(fichier, "%f\t%f\t%d\n", arbre->stockage.longitude, arbre->stockage.latitude, arbre->stockage.donnee);
 			fprintf(fichier, "%d\t%f\t%f\t%f\t%f\n",arbre->stockage.id ,arbre->stockage.longitude, arbre->stockage.latitude, ((arbre->stockage.moyenne/arbre->stockage.donnee)*3.14159)/180, arbre->stockage.moyenne2/arbre->stockage.donnee);
 			//printf("%f\t%f\t%d\t%d\n", arbre->stockage.longitude, arbre->stockage.latitude, arbre->stockage.donnee, arbre->stockage.id);
 			parcours(fichier, arbre->autre, mode);
+			parcours(fichier, arbre->filsD, mode);
+		}
+	}else if(mode == 3){
+		if(arbre != NULL){ // mode pour t1 et p1
+			parcours(fichier, arbre->filsG, mode);
+			fprintf(fichier, "%d\t%f\t%f\t%f\n",arbre->stockage.id ,arbre->stockage.min, arbre->stockage.max, arbre->stockage.moyenne2/arbre->stockage.donnee);
+			//printf("%d\t%f\t%f\t%f\n",arbre->stockage.id ,arbre->stockage.min, arbre->stockage.max, arbre->stockage.moyenne2/arbre->stockage.donnee);
 			parcours(fichier, arbre->filsD, mode);
 		}
 	}
@@ -383,8 +395,11 @@ Parbre insertionABR(Parbre arbre, Stockage stockage, int mode){
 }
 
 
-
-
+int numero_date(char date[30]){
+	int annee, mois, jour, heure, rien;
+	sscanf(date, "%d-%d-%dT%d:00:00+%d:00", &annee, &mois, &jour, &heure, &rien);
+	return (int) ((annee-2000)*365*24)+((mois*(30.5)*24))+(jour*24)+heure;
+}
 
 
 

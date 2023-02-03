@@ -34,7 +34,7 @@ compare(){
 
 rm temp.csv -f
 #cp meteo_filtered_data_v1.csv temp.csv
- head -n100000  $1| tail -n +2  > temp.csv #| cut -d\; -f1,2,4,5,6,7,10,11,14
+ head -n100  $1| tail -n +2  > temp.csv #| cut -d\; -f1,2,4,5,6,7,10,11,14
 
 
 arg_latitude1=$3
@@ -48,7 +48,7 @@ change=0
 
 
 
-cut -d";" -f1,2,4,5,6,7,10,11,12,14 temp.csv | sed 's/,/ /g' | sed 's/;/ /g'  > temp2.csv #remplacer virgule par ; pour que lat et long soit séparé comme le reste
+cut -d";" -f1,2,4,5,6,7,10,11,12,14 temp.csv | sed 's/,/ /g' | sed 's/;/ /g' | sed 's/  / £ /g' | sed 's/  / £ /g'  > temp2.csv #remplacer virgule par ; pour que lat et long soit séparé comme le reste
 
 
 if [ "$2" != "_" ]
@@ -146,25 +146,64 @@ fi
 
 
 
-if [ "${10}" != "_" ]
+if [ "${10}" != "_" ] # Temperatures
 then
 	#cut temp2.csv -d" " -f1,2,8 > temp3.csv
 	#./tri -f temp3.csv -o tmp.dat $9 ${10}
 	#echo 'plot "tmp.dat"' | gnuplot --persist
-	test=1
+	if [ "${10}" == "-t1" ]
+	then
+		# cut temp2.csv -d" " -f1,3,4,7,8 | awk '$1!="£" && $2!="£" && $3!="£" && $4!="£" {print $0}' > temp3.csv
+		cut temp2.csv -d" " -f1,9 > temp3.csv
+		gcc -o tri tri.c -lm
+		chmod u+x -f tri
+		./tri -f temp3.csv -o tmp.dat $9 ${10}
+		echo -e '
+		set grid nopolar
+		set grid xtics mxtics ytics mytics noztics nomztics noztics nortics nomrtics nox2tics nomx2tics noy2tics nomy2tics nomcbtics
+		set style data lines
+		set title "Graphique des température par stations"
+		set xlabel "Station"
+		set ylabel "Température"
+		Shadecolor = "#EECF83"
+		set autoscale noextend
+		set xtics rotated by 90 right
+		set xrange [*:*]
+		plot "tmp.dat" using 4:2 with filledcurves fc rgb Shadecolor notitle' | gnuplot --persist 2>/dev/null
+	fi
 fi
 
-if [ "${11}" != "_" ]
+if [ "${11}" != "_" ] # pression
 then
 	#cut temp2.csv -d" " -f1,2,6 > temp3.csv
 	#./tri -f temp3.csv -o tmp.dat $9 ${11}
 	#echo 'plot "tmp.dat"' | gnuplot --persist
-	test=1
+	if [ "${10}" == "-p1" ]
+	then
+		# cut temp2.csv -d" " -f1,3,4,7,8 | awk '$1!="£" && $2!="£" && $3!="£" && $4!="£" {print $0}' > temp3.csv
+		cut temp2.csv -d" " -f1,6 > temp3.csv
+		gcc -o tri tri.c -lm
+		chmod u+x -f tri
+		./tri -f temp3.csv -o tmp.dat $9 ${11}
+		echo -e '
+		set grid nopolar
+		set grid xtics mxtics ytics mytics noztics nomztics noztics nortics nomrtics nox2tics nomx2tics noy2tics nomy2tics nomcbtics
+		set style data lines
+		set title "Graphique des pressions par stations"
+		set xlabel "Station"
+		set ylabel "Pression"
+		Shadecolor = "#EECF83"
+
+		set autoscale noextend
+		set xrange [*:*]
+		set xtics rotated by 90
+		plot "tmp.dat" using 0:2:3: with vectors arrowstyle 3 notitle' | gnuplot --persist 2>/dev/null
+	fi
 fi
 
-if [ "${12}" != "_" ]
+if [ "${12}" != "_" ] # vent
 then
-	cut temp2.csv -d" " -f1,3,4,7,8 | awk '$1!="" && $2!="" && $3!="" && $4!="" {print $0}' > temp3.csv
+	cut temp2.csv -d" " -f1,3,4,7,8 | awk '$1!="£" && $2!="£" && $3!="£" && $4!="£" {print $0}' > temp3.csv
 	gcc -o tri tri.c -lm
 	chmod u+x -f tri
 	./tri -f temp3.csv -o tmp.dat $9 ${12}
@@ -180,9 +219,9 @@ then
 	plot "tmp.dat" using 2:3:4:5 with vectors arrowstyle 3 notitle' | gnuplot --persist 2>/dev/null
 fi
 
-if [ "${13}" != "_" ]
+if [ "${13}" != "_" ] # altitude
 then
-	cut temp2.csv -d" " -f1,7,8,11 | awk '$1!="" && $2!="" && $3!="" && $4!="" {print $0}' > temp3.csv
+	cut temp2.csv -d" " -f1,7,8,11 | awk '$1!="£" && $2!="£" && $3!="£" && $4!="£" {print $0}' > temp3.csv
 	gcc -o tri tri.c -lm
 	chmod u+x -f tri
 	./tri -f temp3.csv -o tmp.dat $9 ${13}
@@ -199,15 +238,18 @@ then
 	splot "tmp.dat"' | gnuplot --persist 2>/dev/null
 fi
 
-if [ "${14}" != "_" ]
+if [ "${14}" != "_" ] # humidité
 then
-	awk '{print $1" "$2" "$3" "$4" "$6" "$7" "$8" "$9" "$10" "$5 }' temp2.csv > temp.csv
-	cut -d" " -f1,6,7,10 temp.csv | awk '$1!="" && $2!="" && $3!="" && $4!="" {print $0}' > temp3.csv
+	# less temp2.csv
+	awk -F" " '$1!="£" && $7!="£" && $8!="£" && $5!="£" {print $0} ' temp2.csv  > temp.csv
+	awk -F" " '{print $1" "$7" "$8" "$5 }' temp.csv > temp3.csv
+	# exit 1
 	gcc -o tri tri.c -lm
 	chmod u+x -f tri
 	./tri -f temp3.csv -o tmp.dat $9 ${14}
-	awk '$3 <= 100 {print $0}' tmp.dat > temp.csv
-	cat temp.csv > tmp.dat
+	# awk '$3 <= 100 {print $0}' tmp.dat > temp.csv
+	# rm tmp.dat
+	# mv temp.csv tmp.dat
 	echo -e '
 	set xlabel "longitude"
 	set ylabel "latitude"
