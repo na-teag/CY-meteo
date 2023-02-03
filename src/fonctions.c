@@ -351,7 +351,7 @@ void parcours(FILE* fichier, Parbre arbre, int mode){
 		if(arbre != NULL){
 			parcours(fichier, arbre->filsG, mode);
 			//fprintf(fichier, "%f\t%f\t%d\n", arbre->stockage.longitude, arbre->stockage.latitude, arbre->stockage.donnee);
-			fprintf(fichier, "%d\t%f\t%f\t%f\t%f\n",arbre->stockage.id ,arbre->stockage.longitude, arbre->stockage.latitude, ((arbre->stockage.moyenne/arbre->stockage.donnee)*3.14159)/180, arbre->stockage.moyenne2/arbre->stockage.donnee);
+			fprintf(fichier, "%d\t%f\t%f\t%f\t%f\n",arbre->stockage.id ,arbre->stockage.longitude, arbre->stockage.latitude, (((float)arbre->stockage.moyenne/(float)arbre->stockage.donnee)*3.14159)/180, arbre->stockage.moyenne2/(float)arbre->stockage.donnee);
 			//printf("%f\t%f\t%d\t%d\n", arbre->stockage.longitude, arbre->stockage.latitude, arbre->stockage.donnee, arbre->stockage.id);
 			parcours(fichier, arbre->autre, mode);
 			parcours(fichier, arbre->filsD, mode);

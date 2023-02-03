@@ -36,7 +36,7 @@ compare(){
 
 rm temp.csv -f
 cp meteo_filtered_data_v1.csv temp.csv
-head -n2000000 $1 | tail  -n +2  > temp.csv 
+head -n300000 $1 | tail  -n +2  > temp.csv 
 
 
 arg_latitude1=$3
@@ -121,7 +121,6 @@ then
 			change=$arg_longitude1
 			arg_longitude1=$arg_longitude2
 			arg_longitude2=$change
-			echo "test"
 		fi
 		#echo "$arg_longitude1 > $arg_longitude2 : `compare $arg_longitude1 $arg_longitude2`"
 	fi
@@ -156,11 +155,15 @@ then
 	if [ "${10}" == "-t1" ]
 	then
 		cut temp2.csv -d" " -f1,9 | awk '$1!="£" && $2!="£" {print $0}' > temp3.csv
-		#cut temp2.csv -d" " -f1,9 > temp3.csv
 		gcc -o tri tri.c -lm
 		chmod u+x -f tri
-		echo "test"
 		./tri -f temp3.csv -o tmp.dat $9 ${10}
+		retour="$?"
+		if [ $retour -ne 0 ]
+		then
+			echo "Erreur : l'executable 'tri' a renvoyé le code erreur $retour"
+			exit 1
+		fi
 		echo -e '
 		set grid nopolar
 		set grid xtics mxtics ytics mytics noztics nomztics noztics nortics nomrtics nox2tics nomx2tics noy2tics nomy2tics nomcbtics
@@ -172,13 +175,22 @@ then
 		set autoscale noextend
 		set xtics rotated by 90 right
 		set xrange [*:*]
+		set terminal png size 1000,750 enhanced font "Helvetica,20"
+		set output "../docs/température_1.png"
 		plot "tmp.dat" using 1:2:3 with filledcurves fc rgb Shadecolor notitle, "tmp.dat" using 1:4 with lines set linetype 2 lc rgb "sea-green" lw 2 pt 7' | gnuplot --persist 2>/dev/null
+		eog ../docs/température_1.png &
 	elif [ "${10}" == "-t2" ]
 	then
 		cut temp2.csv -d" " -f2,9 | awk '$1!="£" && $2!="£" {print $0}' > temp3.csv
 		gcc -o tri tri.c -lm
 		chmod u+x -f tri
 		./tri -f temp3.csv -o tmp.dat $9 ${10}
+		retour="$?"
+		if [ $retour -ne 0 ]
+		then
+			echo "Erreur : l'executable 'tri' a renvoyé le code erreur $retour"
+			exit 1
+		fi
 		#echo -e '
 		#set grid nopolar
 		#set grid xtics mxtics ytics mytics noztics nomztics noztics nortics nomrtics nox2tics nomx2tics noy2tics nomy2tics nomcbtics
@@ -205,12 +217,14 @@ then
 		set autoscale noextend
 		set xtics rotate by 45 right
 		set xrange [*:*]
+		set terminal png size 1000,750 enhanced font "Helvetica,20"
+		set output "../docs/température_2.png"
 		plot "tmp.dat" using 1:2 with lines set linetype 2 lc rgb "sea-green" lw 2 pt 7 notitle' | gnuplot --persist 2>/dev/null
 		# xlabel = Année.mois selon l'échelle. En cas de grande échelle, on ne voit pas les mois
+		eog ../docs/température_2.png &
 	elif [ "${10}" == "-t3" ]
 	then
 		cut temp2.csv -d" " -f1,2,9 | awk '$1!="£" && $2!="£" && $3!="£" {print $0}' > temp3.csv
-		#cut temp2.csv -d" " -f1,9 > temp3.csv
 		gcc -o tri tri.c -lm
 		chmod u+x -f tri
 		#echo "test"
@@ -233,18 +247,18 @@ fi
 
 if [ "${11}" != "_" ] # pression
 then
-	#cut temp2.csv -d" " -f1,2,6 > temp3.csv
-	#./tri -f temp3.csv -o tmp.dat $9 ${11}
-	#echo 'plot "tmp.dat"' | gnuplot --persist
 	if [ "${11}" == "-p1" ]
 	then
 		cut temp2.csv -d" " -f1,6 | awk '$1!="£" && $2!="£" {print $0}' > temp3.csv
-		#cut temp2.csv -d" " -f1,6 > temp3.csv
 		gcc -o tri tri.c -lm
 		chmod u+x -f tri
-		echo "test"
 		./tri -f temp3.csv -o tmp.dat $9 ${11}
-		echo "test"
+		retour="$?"
+		if [ $retour -ne 0 ]
+		then
+			echo "Erreur : l'executable 'tri' a renvoyé le code erreur $retour"
+			exit 1
+		fi
 		echo -e '
 		set grid nopolar
 		set grid xtics mxtics ytics mytics noztics nomztics noztics nortics nomrtics nox2tics nomx2tics noy2tics nomy2tics nomcbtics
@@ -253,18 +267,25 @@ then
 		set xlabel "Station"
 		set ylabel "Pression"
 		Shadecolor = "#EECF83"
-
 		set autoscale noextend
 		set xrange [*:*]
 		set xtics rotated by 90
+		set terminal png size 1000,750 enhanced font "Helvetica,20"
+		set output "../docs/pression_1.png"
 		plot "tmp.dat" using 1:2:3 with filledcurves fc rgb Shadecolor notitle, "tmp.dat" using 1:4 with lines set linetype 2 lc rgb "sea-green" lw 2 pt 7' | gnuplot --persist 2>/dev/null
+		eog ../docs/pression_1.png &
 	elif [ "${11}" == "-p2" ]
 	then
 		cut temp2.csv -d" " -f2,6 | awk '$1!="£" && $2!="£" {print $0}' > temp3.csv
-		#cut temp2.csv -d" " -f1,6 > temp3.csv
 		gcc -o tri tri.c -lm
 		chmod u+x -f tri
 		./tri -f temp3.csv -o tmp.dat $9 ${11}
+		retour="$?"
+		if [ $retour -ne 0 ]
+		then
+			echo "Erreur : l'executable 'tri' a renvoyé le code erreur $retour"
+			exit 1
+		fi
 		echo -e '
 		set grid nopolar
 		set grid xtics mxtics ytics mytics noztics nomztics noztics nortics nomrtics nox2tics nomx2tics noy2tics nomy2tics nomcbtics
@@ -276,7 +297,10 @@ then
 		set autoscale noextend
 		set xtics rotate by 45 right
 		set xrange [*:*]
+		set terminal png size 1000,750 enhanced font "Helvetica,20"
+		set output "../docs/pression_2.png"
 		plot "tmp.dat" using 1:2 with lines set linetype 2 lc rgb "sea-green" lw 2 pt 7 notitle' | gnuplot --persist 2>/dev/null
+		eog ../docs/pression_2.png &
 	elif [ "${11}" == "-p3" ]
 	then
 		cut temp2.csv -d" " -f1,2,6 | awk '$1!="£" && $2!="£" && $3!="£" {print $0}' > temp3.csv
@@ -306,6 +330,15 @@ then
 	gcc -o tri tri.c -lm
 	chmod u+x -f tri
 	./tri -f temp3.csv -o tmp.dat $9 ${12}
+	retour="$?"
+	awk '$4!="inf" && $5!="inf" {print $0}' tmp.dat > temp.csv
+	rm tmp.dat -f
+	mv temp.csv tmp.dat
+	if [ $retour -ne 0 ]
+	then
+		echo "Erreur : l'executable 'tri' a renvoyé le code erreur $retour"
+		exit 1
+	fi
 	echo -e '
 	set xlabel "longitude"
 	set ylabel "latitude"
@@ -315,7 +348,10 @@ then
 	set xrange [*:*]
 	set yrange [*:*]
 	set autoscale noextend
+	set terminal png size 1000,750 enhanced font "Helvetica,20"
+	set output "../docs/vent.png"
 	plot "tmp.dat" using 2:3:4:5 with vectors arrowstyle 3 notitle' | gnuplot --persist 2>/dev/null
+	eog ../docs/vent.png &
 fi
 
 if [ "${13}" != "_" ] # altitude
@@ -324,6 +360,12 @@ then
 	gcc -o tri tri.c -lm
 	chmod u+x -f tri
 	./tri -f temp3.csv -o tmp.dat $9 ${13}
+	retour="$?"
+	if [ $retour -ne 0 ]
+	then
+		echo "Erreur : l'executable 'tri' a renvoyé le code erreur $retour"
+		exit 1
+	fi
 	# echo "ok"
 	echo -e '
 	set xlabel "longitude"
@@ -334,7 +376,10 @@ then
 	unset key
 	unset surface
 	set pm3d at b
+	set terminal png size 1000,750 enhanced font "Helvetica,20"
+	set output "../docs/altitude.png"
 	splot "tmp.dat"' | gnuplot --persist 2>/dev/null
+	eog ../docs/altitude.png &
 fi
 
 if [ "${14}" != "_" ] # humidité
@@ -346,6 +391,12 @@ then
 	gcc -o tri tri.c -lm
 	chmod u+x -f tri
 	./tri -f temp3.csv -o tmp.dat $9 ${14}
+	retour="$?"
+	if [ $retour -ne 0 ]
+	then
+		echo "Erreur : l'executable 'tri' a renvoyé le code erreur $retour"
+		exit 1
+	fi
 	echo -e '
 	set xlabel "longitude"
 	set ylabel "latitude"
@@ -356,13 +407,14 @@ then
 	unset key
 	unset surface
 	set pm3d at b
+	set terminal png size 1000,750 enhanced font "Helvetica,20"
+	set output "../docs/humidité.png"
 	splot "tmp.dat"' | gnuplot --persist 2>/dev/null
+	eog ../docs/humidité.png &
 fi
 
 
 
-
-#echo 'plot "tmp.dat"' | gnuplot --persist
 
 
 
@@ -371,15 +423,10 @@ fi
 
 #       A FAIRE
 #
-# enlever la colonne des coordonées avant le tris avec les options obligatoires
 # enlever le head -n100
-# vérifier le retour de toute les fonction en C (y compris les programmes de tri)
-# préciser dans le redame et le help que pour le -m, si les stations ont différentes altitude, la + grande sera conservée
-# mettre les titres sur les graphiques et le nom des axes
+# vérifier le retour de toute les fonction en C
 # faire un makefile
-# faire un doc pour les limitations
 # faire des fonctions dans des .c à part
-# faire les images des graphiques
 #
 #
 #
@@ -388,7 +435,6 @@ fi
 #
 # changer ordre alphabetique readme en ordre thematique
 # mettre que la date de début pour aller jusqu'au bout
-# verifier boucle affichage tableau 70/69 et 0/1
 #
 #
 #

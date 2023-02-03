@@ -54,8 +54,8 @@ int main(int argc, char *argv[]){
 	if(arg_ah == 0 && arg_w == 0 && arg_tp == 0){
 		exit(1);
 	}
-	//printf("arg_tri=%d, %s, arg_ah=%d, arg_w=%d, arg_tp=%d", arg_tri, argv[5], arg_ah, arg_w, arg_tp);
-
+	
+	
 
 // partie fichier
 	
@@ -91,7 +91,6 @@ int main(int argc, char *argv[]){
 
 			for(i=0; !feof(fichier); i++){ // si la fin du fichier n'est pas atteinte (à faire après chaque scanf)
 				fscan(fichier, &stockage);
-				//printf("%f\t%f\t%d\n", stockage.longitude, stockage.latitude, stockage.donnee);
 				num =recherche(tab, 0, 70, stockage.id);
 				if(num == -1){
 					if(tab[0].id != -1){
@@ -110,23 +109,17 @@ int main(int argc, char *argv[]){
 			}
 
 
-			//affichtab(tab);exit(1);
+
 			test=0;
 			triRapide(tab, 70, 2);
 			for(int j=70; j>=0; j--){
 				if(tab[j].id!=-1 && tab[j].id!=0 && tab[j].longitude<=200){
 					fprintf(fichier2, "%f\t%f\t%d\n", tab[j].longitude, tab[j].latitude, tab[j].donnee);
-					//printf("%f\t%f\t%d\n", tab[j].longitude, tab[j].latitude, tab[j].donnee);
 				}else{
 					test++;
 				}
-			}//for(int j=0; j<70;j++){if(tab[j].donnee==194){printf("ppppp%dpppppp",j);}}
-			printf("stations trouvées : %d", 70-test);
-			if(test==0){
-				printf(" ou plus\n");
-			}else{
-				printf("\n");
 			}
+			
 		}
 
 	// ABR
@@ -146,7 +139,7 @@ int main(int argc, char *argv[]){
 					}
 				}
 			}
-			//affArbreGraphique(arbre, 1);
+			
 			parcours(fichier2, arbre, 1);
 			fclose(fichier2);
 			suppr_arbre(arbre);
@@ -166,7 +159,7 @@ int main(int argc, char *argv[]){
 					temp2->autre=CreerArbre(stockage);
 				}
 			}
-				//affArbreGraphique(arbre, 1);
+			
 			fclose(fichier2);
 			fichier2 = fopen(chemin_fichier2, "w");
 			if(fichier2 == NULL){
@@ -194,7 +187,7 @@ int main(int argc, char *argv[]){
 					}
 				}
 			}
-			//affArbreGraphique(arbre, 1);
+			
 			parcours(fichier2, arbre, 1);
 			fclose(fichier2);
 			suppr_arbre(arbre);
@@ -217,7 +210,7 @@ int main(int argc, char *argv[]){
 					}
 
 			}
-			fclose(fichier2);//affArbreGraphique(arbre, 1);
+			fclose(fichier2);
 			fichier2 = fopen(chemin_fichier2, "w");
 			if(fichier2 == NULL){
 				printf("\n%s dans %s, erreur %d : %s \n\n", argv[4], chemin_fichier2, errno, strerror(errno));
@@ -247,7 +240,6 @@ int main(int argc, char *argv[]){
 		
 		for(i=0; !feof(fichier); i++){ // si la fin du fichier n'est pas atteinte (à faire après chaque scanf)
 			fscanf(fichier, "%d %d %f %f %f",&stockage.id, &stockage.moyenne, &stockage.moyenne2, &stockage.latitude, &stockage.longitude);
-			//printf("%f\t%f\t%d\n", stockage.longitude, stockage.latitude, stockage.donnee);
 			num =recherche(tab, 0, 70, stockage.id);
 			if(num == -1){
 				if(tab[0].id != -1){
@@ -265,28 +257,22 @@ int main(int argc, char *argv[]){
 				tab[num].moyenne += stockage.moyenne;
 				tab[num].donnee ++;
 			}
-			//printf("%d\t%f\t%d\n", tab[70].id, tab[70].moyenne2, tab[70].donnee);
+		
 		}
 		tab[num].moyenne -= stockage.moyenne; // la derniere ligne semble être traitée deux fois
 		tab[num].moyenne2 -= stockage.moyenne2;
 		tab[num].donnee --;
 
-		//affichtab(tab);exit(1);
+		
 		test=0;
 		for(int j=0; j<=70; j++){
 			if(tab[j].id!=-1 && tab[j].id!=0 && tab[j].longitude<=200){
 				fprintf(fichier2, "%d\t%f\t%f\t%f\t%f\n",tab[j].id ,tab[j].longitude, tab[j].latitude, ((tab[j].moyenne/tab[j].donnee)*3.14159)/180, tab[j].moyenne2/tab[j].donnee);
-				//printf("%f\t%f\t%d\n", tab[j].longitude, tab[j].latitude, tab[j].donnee);
 			}else{
 				test++;
 			}
-		}//for(int j=0; j<70;j++){if(tab[j].donnee==194){printf("ppppp%dpppppp",j);}}
-		printf("stations trouvées : %d", 70-test+1);
-		if(test==0){
-			printf(" ou plus\n");
-		}else{
-			printf("\n");
 		}
+		
 		}else if(arg_tri == 2){
 
 	// ABR
@@ -306,7 +292,6 @@ int main(int argc, char *argv[]){
 			}
 		}
 		parcours(fichier2, arbre, 2);
-		//affArbreGraphique(arbre, 1);
 		
 		}else if(arg_tri == 3){
 
@@ -327,11 +312,9 @@ int main(int argc, char *argv[]){
 				temp->stockage.moyenne2 += stockage.moyenne2;
 				temp->stockage.moyenne += stockage.moyenne;
 			}
-			//printf("%d", temp->stockage.id);
+			
 		}
 		parcours(fichier2, arbre, 2);
-		//affArbreGraphique(arbre, 1);
-		
 		}
 	}else if(arg_tp == 1){
 
@@ -349,7 +332,6 @@ int main(int argc, char *argv[]){
 		
 		for(i=0; !feof(fichier); i++){ // si la fin du fichier n'est pas atteinte (à faire après chaque scanf)
 			fscanf(fichier, "%d %f\n",&stockage.id, &stockage.min);
-			//printf("%f\t%f\t%d\n", stockage.longitude, stockage.latitude, stockage.donnee);
 			num =recherche(tab, 0, 70, stockage.id);
 			if(num == -1){
 				if(tab[0].id != -1){
@@ -371,28 +353,22 @@ int main(int argc, char *argv[]){
 					tab[num].max = stockage.min;
 				}
 			}
-			//printf("%d\t%f\t%d\n", tab[70].id, tab[70].moyenne2, tab[70].donnee);
+		
 		}
 		tab[num].moyenne2 -= stockage.moyenne2; // la derniere ligne semble être traitée deux fois
 		tab[num].donnee --;
-		//printf("%d\t%f\t%d\n\n", tab[70].id, tab[70].moyenne2, tab[70].donnee);
+		
+		
 
-		//affichtab(tab);exit(1);
 		test=0;
 		for(int j=0; j<=70; j++){
 			if(tab[j].id!=-1 && tab[j].id!=0 && tab[j].longitude<=200){
 				fprintf(fichier2, "%d\t%f\t%f\t%f\n",tab[j].id ,tab[j].min, tab[j].max, tab[j].moyenne2/tab[j].donnee);
-				//printf("%d\t%f\t%f\t%f\n",tab[j].id ,tab[j].min, tab[j].max, tab[j].moyenne2/tab[j].donnee);
 			}else{
 				test++;
 			}
-		}//for(int j=0; j<70;j++){if(tab[j].donnee==194){printf("ppppp%dpppppp",j);}}
-		printf("stations trouvées : %d", 70-test+1);
-		if(test==0){
-			printf(" ou plus\n");
-		}else{
-			printf("\n");
 		}
+		
 		}else if(arg_tri == 2){
 
 	// ABR
@@ -415,8 +391,8 @@ int main(int argc, char *argv[]){
 					temp->stockage.max = stockage.moyenne2;
 				}
 			}
-			//printf("%f\n", stockage.moyenne2);
-		//affArbreGraphique(arbre, 1);
+			
+
 		}
 		parcours(fichier2, arbre, 3);
 
@@ -446,8 +422,7 @@ int main(int argc, char *argv[]){
 					temp->stockage.max = stockage.moyenne2;
 				}
 			}
-			//printf("%f\n", stockage.moyenne2);
-		//affArbreGraphique(arbre, 1);
+			
 		}
 		parcours(fichier2, arbre, 3);
 		
@@ -464,17 +439,16 @@ int main(int argc, char *argv[]){
 		
 		if(arg_tri == 1){
 
-		Stockage tab[10000];
-		init(tab, 10000);//on initialise toutes les cases du tableau à -1
+		int tab_taille = 10000;
+		Stockage tab[tab_taille];
+		init(tab, tab_taille);//on initialise toutes les cases du tableau à -1
 		
 		for(i=0; !feof(fichier); i++){ // si la fin du fichier n'est pas atteinte (à faire après chaque scanf)
 			fscanf(fichier, "%s %f\n", &stockage.date, &stockage.moyenne2);
-			//printf("%f\t%f\t%d\n", stockage.longitude, stockage.latitude, stockage.donnee);
 			stockage.date[25]='\0';
 			stockage.id = numero_date(stockage.date);
 			stockage.date[25]='\0';
-			//printf("%s=%d\n", stockage.date, stockage.id);
-			num =recherche(tab, 0, 10000, stockage.id);
+			num =recherche(tab, 0, tab_taille, stockage.id);
 			if(num == -1){
 				if(tab[0].id != -1){
 					printf("erreur\n");
@@ -483,36 +457,28 @@ int main(int argc, char *argv[]){
 					tab[0].date[i] = stockage.date[i];
 				}
 				tab[0].date[25] = '\0';
-				//printf("%s\t%s\n", tab[0].date, stockage.date);
 				tab[0].id = stockage.id;
 				tab[0].donnee = 1;
 				tab[0].moyenne2 = stockage.moyenne2;
-				triRapide(tab, 10000, 1);
+				triRapide(tab, tab_taille, 1);
 			}else{
 				tab[num].moyenne2 += stockage.moyenne2;
 				tab[num].donnee ++;
 			}
-			//printf("%d\t%f\t%d\n", tab[70].id, tab[70].moyenne2, tab[70].donnee);
 		}
 		tab[num].moyenne2 -= stockage.moyenne2; // la derniere ligne semble être traitée deux fois
 		tab[num].donnee --;
-		//printf("%d\t%f\t%d\n\n", tab[70].id, tab[70].moyenne2, tab[70].donnee);
 		
-		//affichtab(tab);exit(1);
+		
 		test=0;
-		for(int j=0; j<10000; j++){
+		for(int j=0; j<tab_taille; j++){
 			if(tab[j].id!=-1 && tab[j].id!=0){
-				fprintf(fichier2, "%.2f\t%f\n", (floor(((float) tab[j].id)/100000))/100 ,tab[j].moyenne2/tab[j].donnee);
+				fprintf(fichier2, "%.2f\t%f\n", (floor(((float) tab[j].id)/10000))/100 ,tab[j].moyenne2/tab[j].donnee);
 			}else{
 				test++;
 			}
-		}//for(int j=0; j<70;j++){if(tab[j].donnee==194){printf("ppppp%dpppppp",j);}}
-		printf("stations trouvées : %d", 10000-test+1);
-		if(test==0){
-			printf(" ou plus\n");
-		}else{
-			printf("\n");
 		}
+		
 		}else if(arg_tri == 2){
 
 	// ABR
@@ -533,8 +499,7 @@ int main(int argc, char *argv[]){
 				temp->stockage.moyenne2 += stockage.moyenne2;
 				temp->stockage.donnee ++;
 			}
-			//printf("%f\n", stockage.moyenne2);
-		//affArbreGraphique(arbre, 1);
+		
 		}
 		parcours(fichier2, arbre, 4);
 
@@ -559,8 +524,7 @@ int main(int argc, char *argv[]){
 				temp->stockage.moyenne2 += stockage.moyenne2;
 				temp->stockage.donnee ++;
 			}
-			//printf("%f\n", stockage.moyenne2);
-		//affArbreGraphique(arbre, 1);
+		
 		}
 		parcours(fichier2, arbre, 4);
 		
