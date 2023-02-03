@@ -101,6 +101,7 @@ do
         if [ "$arg_t" = "_" ] || [ "$arg_t" = "$k" ]
         then
             arg_t="$k"
+            echo "attention, l'option -t3 n'est pas disponible dans cette version"
         else
             erreur_arg=1
             erreur_txt="$erreur_txt\nerreur : l'option -t a déjà été utilisée, impossible d'en ajouter une autre"
@@ -134,6 +135,7 @@ do
         if [ "$arg_p" = "_" ] || [ "$arg_p" = "$k" ]
         then
             arg_p="$k"
+            echo "attention, l'option -p3 n'est pas disponible dans cette version"
         else
             erreur_arg=1
             erreur_txt="$erreur_txt\nerreur : l'option -p a déjà été utilisée, impossible d'en ajouter une autre"

@@ -55,9 +55,9 @@ void croissant(float *nbr1, float *nbr2){
 	}
 }
 
-void affichtab(Stockage tab[70]){
+void affichtab(Stockage tab[], int nbr){
 	int j=1;
-	for(int i=0; i<=70; i++){
+	for(int i=0; i<=nbr; i++){
 		printf("%d, tab[%d] (%d) %d\n", tab[i].donnee, i, j, tab[i].id);
 		j++;
 	}
@@ -151,8 +151,8 @@ int recherche(Stockage tab[], int droite, int gauche, int element){
 	return -1;
 }
 
-void init(Stockage tab[]){
-	for(int i=0; i <= 70; i++){	// oui, le 70 est inclu. pk ya pas de seg fault on est pas trop sur
+void init(Stockage tab[], int nbr){
+	for(int i=0; i <= nbr; i++){	// oui, le nbr est inclu. pk ya pas de seg fault on est pas trop sur
 		tab[i].id = -1;			// mais sans ça il manque une case du tableau
 		tab[i].donnee = -1;
 		tab[i].moyenne = 0;
@@ -181,6 +181,11 @@ Parbre CreerArbre(Stockage stockage){
 	arbre->stockage.moyenne2 = stockage.moyenne2;
 	arbre->stockage.longitude = stockage.longitude;
 	arbre->stockage.latitude = stockage.latitude;
+	for(int i=0; i<24; i++){
+		arbre->stockage.date[i] = stockage.date[i];
+	}
+	arbre->stockage.date[25] = '\0';
+
 	arbre->filsD = NULL;
 	arbre->filsG = NULL;
 	arbre->equilibre = 0;
@@ -355,7 +360,12 @@ void parcours(FILE* fichier, Parbre arbre, int mode){
 		if(arbre != NULL){ // mode pour t1 et p1
 			parcours(fichier, arbre->filsG, mode);
 			fprintf(fichier, "%d\t%f\t%f\t%f\n",arbre->stockage.id ,arbre->stockage.min, arbre->stockage.max, arbre->stockage.moyenne2/arbre->stockage.donnee);
-			//printf("%d\t%f\t%f\t%f\n",arbre->stockage.id ,arbre->stockage.min, arbre->stockage.max, arbre->stockage.moyenne2/arbre->stockage.donnee);
+			parcours(fichier, arbre->filsD, mode);
+		}
+	}else if(mode == 4){
+		if(arbre != NULL){ // mode pour t2 et p2
+			parcours(fichier, arbre->filsG, mode);
+			fprintf(fichier, "%.2f\t%f\n", (floor(((float) arbre->stockage.id)/10000))/100 ,arbre->stockage.moyenne2/arbre->stockage.donnee);
 			parcours(fichier, arbre->filsD, mode);
 		}
 	}
@@ -395,23 +405,13 @@ Parbre insertionABR(Parbre arbre, Stockage stockage, int mode){
 }
 
 
-int numero_date(char date[30]){
-	int annee, mois, jour, heure, rien;
-	sscanf(date, "%d-%d-%dT%d:00:00+%d:00", &annee, &mois, &jour, &heure, &rien);
-	return (int) ((annee-2000)*365*24)+((mois*(30.5)*24))+(jour*24)+heure;
+int numero_date(char date[25]){
+	int annee, mois, jour, heure, rien, rien2, rien3, rien4;
+	sscanf(date, "%d-%d-%dT%d:%d:%d+%d:%d", &annee, &mois, &jour, &heure, &rien, &rien2, &rien3, &rien4);
+	//sprintf(date, "%d/%d/%d_%d", annee, mois, jour, heure);
+	//date[18]='\0';
+	return (annee*1000000)+(mois*10000)+(jour*100)+heure;
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

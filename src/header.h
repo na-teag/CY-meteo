@@ -10,6 +10,7 @@
 
 
 
+
 typedef struct stockage{
 	int id;
 	int donnee;
@@ -20,6 +21,7 @@ typedef struct stockage{
 	float moyenne2;
 	float latitude;
 	float longitude;
+	char date[25];
 
 }Stockage;
 
@@ -45,7 +47,7 @@ Stockage* fscan(FILE* fichier, Stockage* stockage);
 void triRapide(Stockage tab[], int taille, int colonne);
 void rapideRec(Stockage tab[], int taille, int debut, int fin, int colonne);
 int partition(Stockage tab[], int taille, int debut, int fin, int colonne);
-void init(Stockage tab[]);
+void init(Stockage tab[], int nbr);
 Parbre CreerArbre(Stockage stockage);
 Parbre recherche_arbre(Parbre arbre, int nbr, int mode);
 Parbre insertionAVL(Parbre arbre, Stockage stockage, int* h, int mode);

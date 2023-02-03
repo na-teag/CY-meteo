@@ -32,9 +32,11 @@ compare(){
 
 
 
+
+
 rm temp.csv -f
-#cp meteo_filtered_data_v1.csv temp.csv
- head -n100  $1| tail -n +2  > temp.csv #| cut -d\; -f1,2,4,5,6,7,10,11,14
+cp meteo_filtered_data_v1.csv temp.csv
+head -n2000000 $1 | tail  -n +2  > temp.csv 
 
 
 arg_latitude1=$3
@@ -153,10 +155,11 @@ then
 	#echo 'plot "tmp.dat"' | gnuplot --persist
 	if [ "${10}" == "-t1" ]
 	then
-		# cut temp2.csv -d" " -f1,3,4,7,8 | awk '$1!="£" && $2!="£" && $3!="£" && $4!="£" {print $0}' > temp3.csv
-		cut temp2.csv -d" " -f1,9 > temp3.csv
+		cut temp2.csv -d" " -f1,9 | awk '$1!="£" && $2!="£" {print $0}' > temp3.csv
+		#cut temp2.csv -d" " -f1,9 > temp3.csv
 		gcc -o tri tri.c -lm
 		chmod u+x -f tri
+		echo "test"
 		./tri -f temp3.csv -o tmp.dat $9 ${10}
 		echo -e '
 		set grid nopolar
@@ -169,7 +172,62 @@ then
 		set autoscale noextend
 		set xtics rotated by 90 right
 		set xrange [*:*]
-		plot "tmp.dat" using 4:2 with filledcurves fc rgb Shadecolor notitle' | gnuplot --persist 2>/dev/null
+		plot "tmp.dat" using 1:2:3 with filledcurves fc rgb Shadecolor notitle, "tmp.dat" using 1:4 with lines set linetype 2 lc rgb "sea-green" lw 2 pt 7' | gnuplot --persist 2>/dev/null
+	elif [ "${10}" == "-t2" ]
+	then
+		cut temp2.csv -d" " -f2,9 | awk '$1!="£" && $2!="£" {print $0}' > temp3.csv
+		gcc -o tri tri.c -lm
+		chmod u+x -f tri
+		./tri -f temp3.csv -o tmp.dat $9 ${10}
+		#echo -e '
+		#set grid nopolar
+		#set grid xtics mxtics ytics mytics noztics nomztics noztics nortics nomrtics nox2tics nomx2tics noy2tics nomy2tics nomcbtics
+		#set style data lines
+		#set title "Graphique des température par heure"
+		#set xlabel "Heure"
+		#set ylabel "Température"
+		#set autoscale noextend
+		#set timefmt '%Y-%m-%d %H'
+		#set xdata time
+		#set format x '%Y-%m-%d %H'
+		#set xrange [*:*]
+		#set yrange [*:*]
+		#set xtics rotate by 45 right
+		#plot "tmp.dat" using (sprintf("%s-%s",substr(stringcolumn(1),1,10),substr(stringcolumn(1),12,14))):2 with lines notitle ' | gnuplot --persist 2>/dev/null
+		echo -e '
+		set grid nopolar
+		set grid xtics mxtics ytics mytics noztics nomztics noztics nortics nomrtics nox2tics nomx2tics noy2tics nomy2tics nomcbtics
+		set style data lines
+		set title "Graphique des température par heure"
+		set xlabel "Année.mois"
+		set ylabel "Température"
+		Shadecolor = "#EECF83"
+		set autoscale noextend
+		set xtics rotate by 45 right
+		set xrange [*:*]
+		plot "tmp.dat" using 1:2 with lines set linetype 2 lc rgb "sea-green" lw 2 pt 7 notitle' | gnuplot --persist 2>/dev/null
+		# xlabel = Année.mois selon l'échelle. En cas de grande échelle, on ne voit pas les mois
+	elif [ "${10}" == "-t3" ]
+	then
+		cut temp2.csv -d" " -f1,2,9 | awk '$1!="£" && $2!="£" && $3!="£" {print $0}' > temp3.csv
+		#cut temp2.csv -d" " -f1,9 > temp3.csv
+		gcc -o tri tri.c -lm
+		chmod u+x -f tri
+		#echo "test"
+		#./tri -f temp3.csv -o tmp.dat $9 ${10}
+		#echo -e '
+		#set grid nopolar
+		#set grid xtics mxtics ytics mytics noztics nomztics noztics nortics nomrtics nox2tics nomx2tics noy2tics nomy2tics nomcbtics
+		#set style data lines
+		#set title "Graphique des température selon les stations par horaire"
+		#set xlabel "Heure"
+		#set ylabel "Température"
+		#Shadecolor = "#EECF83"
+		#set autoscale noextend
+		#set xtics rotated by 90 right
+		#set xrange [*:*]
+		#plot "tmp.dat" using 1:2:3 with filledcurves fc rgb Shadecolor notitle, "tmp.dat" using 1:4 with lines set linetype 2 lc rgb "sea-green" lw 2 pt 7' | gnuplot --persist 2>/dev/null
+		#echo "l'option -t3 n'est pas disponible dans cette version"
 	fi
 fi
 
@@ -178,13 +236,15 @@ then
 	#cut temp2.csv -d" " -f1,2,6 > temp3.csv
 	#./tri -f temp3.csv -o tmp.dat $9 ${11}
 	#echo 'plot "tmp.dat"' | gnuplot --persist
-	if [ "${10}" == "-p1" ]
+	if [ "${11}" == "-p1" ]
 	then
-		# cut temp2.csv -d" " -f1,3,4,7,8 | awk '$1!="£" && $2!="£" && $3!="£" && $4!="£" {print $0}' > temp3.csv
-		cut temp2.csv -d" " -f1,6 > temp3.csv
+		cut temp2.csv -d" " -f1,6 | awk '$1!="£" && $2!="£" {print $0}' > temp3.csv
+		#cut temp2.csv -d" " -f1,6 > temp3.csv
 		gcc -o tri tri.c -lm
 		chmod u+x -f tri
+		echo "test"
 		./tri -f temp3.csv -o tmp.dat $9 ${11}
+		echo "test"
 		echo -e '
 		set grid nopolar
 		set grid xtics mxtics ytics mytics noztics nomztics noztics nortics nomrtics nox2tics nomx2tics noy2tics nomy2tics nomcbtics
@@ -197,7 +257,46 @@ then
 		set autoscale noextend
 		set xrange [*:*]
 		set xtics rotated by 90
-		plot "tmp.dat" using 0:2:3: with vectors arrowstyle 3 notitle' | gnuplot --persist 2>/dev/null
+		plot "tmp.dat" using 1:2:3 with filledcurves fc rgb Shadecolor notitle, "tmp.dat" using 1:4 with lines set linetype 2 lc rgb "sea-green" lw 2 pt 7' | gnuplot --persist 2>/dev/null
+	elif [ "${11}" == "-p2" ]
+	then
+		cut temp2.csv -d" " -f2,6 | awk '$1!="£" && $2!="£" {print $0}' > temp3.csv
+		#cut temp2.csv -d" " -f1,6 > temp3.csv
+		gcc -o tri tri.c -lm
+		chmod u+x -f tri
+		./tri -f temp3.csv -o tmp.dat $9 ${11}
+		echo -e '
+		set grid nopolar
+		set grid xtics mxtics ytics mytics noztics nomztics noztics nortics nomrtics nox2tics nomx2tics noy2tics nomy2tics nomcbtics
+		set style data lines
+		set title "Graphique des pressions par heure"
+		set xlabel "Année.mois"
+		set ylabel "Pression"
+		Shadecolor = "#EECF83"
+		set autoscale noextend
+		set xtics rotate by 45 right
+		set xrange [*:*]
+		plot "tmp.dat" using 1:2 with lines set linetype 2 lc rgb "sea-green" lw 2 pt 7 notitle' | gnuplot --persist 2>/dev/null
+	elif [ "${11}" == "-p3" ]
+	then
+		cut temp2.csv -d" " -f1,2,6 | awk '$1!="£" && $2!="£" && $3!="£" {print $0}' > temp3.csv
+		#cut temp2.csv -d" " -f1,2,6 > temp3.csv
+		gcc -o tri tri.c -lm
+		chmod u+x -f tri
+		#./tri -f temp3.csv -o tmp.dat $9 ${11}
+		#echo -e '
+		#set grid nopolar
+		#set grid xtics mxtics ytics mytics noztics nomztics noztics nortics nomrtics nox2tics nomx2tics noy2tics nomy2tics nomcbtics
+		#set style data lines
+		#set title "Graphique des température selon les stations par horaire"
+		#set xlabel "Heure"
+		#set ylabel "Pression"
+		#Shadecolor = "#EECF83"
+		#set autoscale noextend
+		#set xtics rotated by 90 right
+		#set xrange [*:*]
+		#plot "tmp.dat" using 1:2:3 with filledcurves fc rgb Shadecolor notitle, "tmp.dat" using 1:4 with lines set linetype 2 lc rgb "sea-green" lw 2 pt 7' | gnuplot --persist 2>/dev/null
+		#echo "l'option -p3 n'est pas disponible dans cette version"
 	fi
 fi
 
@@ -247,9 +346,6 @@ then
 	gcc -o tri tri.c -lm
 	chmod u+x -f tri
 	./tri -f temp3.csv -o tmp.dat $9 ${14}
-	# awk '$3 <= 100 {print $0}' tmp.dat > temp.csv
-	# rm tmp.dat
-	# mv temp.csv tmp.dat
 	echo -e '
 	set xlabel "longitude"
 	set ylabel "latitude"
@@ -261,7 +357,6 @@ then
 	unset surface
 	set pm3d at b
 	splot "tmp.dat"' | gnuplot --persist 2>/dev/null
-	# splot "tmp.dat" using 1:2:3 with pm3d title"X"' | gnuplot --persist
 fi
 
 
@@ -282,16 +377,17 @@ fi
 # préciser dans le redame et le help que pour le -m, si les stations ont différentes altitude, la + grande sera conservée
 # mettre les titres sur les graphiques et le nom des axes
 # faire un makefile
+# faire un doc pour les limitations
+# faire des fonctions dans des .c à part
+# faire les images des graphiques
 #
 #
 #
 #       A FAIRE SI Y'A LE TEMPS
 #
-# dans arguments.sh, regrouper les -t1/2/3 et -p1/2/ en une seule étape
+#
 # changer ordre alphabetique readme en ordre thematique
 # mettre que la date de début pour aller jusqu'au bout
-# faire une option pour exporter le graphique
-# option -m/h --tab : nombre le +grand ne semble pas apparaitre dans le fichier trié
 # verifier boucle affichage tableau 70/69 et 0/1
 #
 #
