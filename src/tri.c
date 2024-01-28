@@ -444,7 +444,7 @@ int main(int argc, char *argv[]){
 		init(tab, tab_taille);//on initialise toutes les cases du tableau à -1
 		
 		for(i=0; !feof(fichier); i++){ // si la fin du fichier n'est pas atteinte (à faire après chaque scanf)
-			fscanf(fichier, "%s %f\n", &stockage.date, &stockage.moyenne2);
+			fscanf(fichier, "%s %f\n", (char*)&stockage.date, &stockage.moyenne2);
 			stockage.date[25]='\0';
 			stockage.id = numero_date(stockage.date);
 			stockage.date[25]='\0';
@@ -486,7 +486,7 @@ int main(int argc, char *argv[]){
 		Parbre arbre = NULL;
 		Parbre temp;
 		for(i=0; !feof(fichier); i++){ // si la fin du fichier n'est pas atteinte (à faire après chaque scanf)
-			fscanf(fichier, "%s %f\n", &stockage.date, &stockage.moyenne2);
+			fscanf(fichier, "%s %f\n", (char*)&stockage.date, &stockage.moyenne2);
 			stockage.date[25]='\0';
 			stockage.id = numero_date(stockage.date);
 			stockage.date[25]='\0';
@@ -511,7 +511,7 @@ int main(int argc, char *argv[]){
 		Parbre temp;
 		int h;
 		for(i=0; !feof(fichier); i++){ // si la fin du fichier n'est pas atteinte (à faire après chaque scanf)
-			fscanf(fichier, "%s %f\n", &stockage.date, &stockage.moyenne2);
+			fscanf(fichier, "%s %f\n", (char*)&stockage.date, &stockage.moyenne2);
 			stockage.date[25]='\0';
 			stockage.id = numero_date(stockage.date);
 			stockage.date[25]='\0';

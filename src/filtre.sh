@@ -36,7 +36,7 @@ compare(){
 
 rm temp.csv -f
 cp meteo_filtered_data_v1.csv temp.csv
-head -n300000 $1 | tail  -n +2  > temp.csv 
+head -n1000000 $1 | tail  -n +2  > temp.csv 
 
 
 arg_latitude1=$3
@@ -415,6 +415,7 @@ fi
 
 
 
+rm -f temp.csv temp2.csv temp3.csv tri tmp.dat
 
 
 
